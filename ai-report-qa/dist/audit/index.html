@@ -1,0 +1,519 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>财报检索实跑与证据审计</title><style>body{font:16px/1.7 system-ui,sans-serif;background:#f5f7fb;color:#18243b;margin:0}main{max-width:1200px;margin:auto;padding:32px 20px}a{color:#2556b8}h1{font-size:32px}section,details{background:white;padding:24px;margin:20px 0;border:1px solid #dce2ee;border-radius:12px}summary{cursor:pointer;font-weight:bold}.scroll{overflow:auto}table{border-collapse:collapse;width:100%;font-size:14px}th,td{border-bottom:1px solid #dce2ee;padding:10px;text-align:left;vertical-align:top}code{font-size:12px;overflow-wrap:anywhere}.note{color:#566780}nav{display:flex;gap:20px;flex-wrap:wrap}caption{text-align:left;font-weight:bold}p{overflow-wrap:anywhere}</style><main><a href="../index.html">← 返回问答页</a><h1>财报检索实跑与证据审计</h1><p>12家公司 · 4,371切块 · 10道题（含2道全景题） · 2026-11-24</p><nav><a href="一页结论.pdf">一页结论 PDF</a><a href="财报检索与十题评价.md">完整报告 Markdown</a><a href="逐题运行结果.json">三路 Top12 原始结果 JSON</a><a href="官方来源与单元格.json">来源与单元格 JSON</a></nav><section><h2>运行方法与评价口径</h2><p>实际读取已有倒排索引与 vectors.bin，在全库运行 BM25、向量及融合三路检索。BM25：k1=1.35、b=0.72；256维有符号 TF-IDF 哈希向量，经 int8 量化。融合 = 0.47 × BM25 / 全库最高BM25 + 0.53 × max(0, 向量点积)。</p><p class="note">哈希向量并非语义嵌入。本次运行不含原问答页对初始Top12的启发式重排。Recall@12按指定证据切块ID精确匹配，不代表所有相关切块的召回率。答案通过全量结构化表格补取，不能将补取视为检索命中。官方链接已核对标题，尚未对远程PDF与本地文件做二进制一致性验证。</p></section><section><h2>12家公司官方完整报告</h2><p>报告期统一为2026年上半年，以下链接均为完整报告。R/C含表头、从1起；页码为PDF物理页。金额统一换算为元，原值与单位保存在JSON。</p><div class="scroll"><table><tr><th>公司</th><th>完整报告</th><th>页数</th><th>营业收入（元）</th><th>单元格位置</th></tr>
+<tr><td>科大讯飞</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-21/1225485550.PDF'>官方PDF</a></td><td>270</td><td>11622772994.87</td><td>第7页 / p0007_t0004 / R2C2</td></tr>
+<tr><td>寒武纪</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-08/1225464969.PDF'>官方PDF</a></td><td>174</td><td>5995573619.61</td><td>第7页 / p0007_t0009 / R2C2</td></tr>
+<tr><td>海光信息</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-14/1225472510.PDF'>官方PDF</a></td><td>166</td><td>9099020774.81</td><td>第8页 / p0008_t0009 / R2C2</td></tr>
+<tr><td>浪潮信息</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-29/1225530925.PDF'>官方PDF</a></td><td>154</td><td>84378727200.0</td><td>第7页 / p0007_t0004 / R2C4</td></tr>
+<tr><td>中科曙光</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-26/1225507613.PDF'>官方PDF</a></td><td>192</td><td>7465810151.43</td><td>第5页 / p0005_t0009 / R2C2</td></tr>
+<tr><td>金山办公</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-20/1225482678.PDF'>官方PDF</a></td><td>199</td><td>3313262599.2</td><td>第6页 / p0006_t0006 / R2C2</td></tr>
+<tr><td>三六零</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-20/1225483359.PDF'>官方PDF</a></td><td>190</td><td>4172122000.0</td><td>第8页 / p0008_t0010 / R2C2</td></tr>
+<tr><td>昆仑万维</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-20/1225483546.PDF'>官方PDF</a></td><td>212</td><td>5359200218.63</td><td>第12页 / p0012_t0004 / R2C2</td></tr>
+<tr><td>拓尔思</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-29/1225523925.PDF'>官方PDF</a></td><td>152</td><td>126374704.8</td><td>第8页 / p0008_t0005 / R2C4</td></tr>
+<tr><td>云天励飞</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-27/1225515128.PDF'>官方PDF</a></td><td>188</td><td>635662213.58</td><td>第9页 / p0009_t0011 / R2C2</td></tr>
+<tr><td>中际旭创</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-22/1225491753.PDF'>官方PDF</a></td><td>184</td><td>41777861795.03</td><td>第8页 / p0008_t0005 / R2C4</td></tr>
+<tr><td>润泽科技</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-28/1225521959.PDF'>官方PDF</a></td><td>150</td><td>3745694047.05</td><td>第9页 / p0009_t0006 / R2C2</td></tr>
+</table></div></section><h2>10道题：证据、评价与真实排名</h2>
+<details><summary>Q1 科大讯飞2026年上半年营业收入是多少？</summary><p>科大讯飞 营业收入：11622772994.87元 [PDF 7页/p0007_t0004/R2C2]</p><p>评价：融合前12不足，需补取；融合公司覆盖：4/12。</p><p>证据Recall@12：bm25 0.0% / vector 0.0% / fusion 0.0%</p>
+<div class="scroll"><table><caption>逐项证据</caption><tr><th>公司／指标</th><th>原值／单位</th><th>PDF／表／行列</th><th>切块ID</th></tr>
+<tr><td>科大讯飞 / 营业收入</td><td>11,622,772,994.87 元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-21/1225485550.PDF#page=7'>第7页</a> / p0007_t0004 / R2C2</td><td><code>4a52775ab787b38a61c0</code></td></tr>
+</table></div>
+<h3>bm25 · Top12</h3><div class="scroll"><table><tr><th>排名</th><th>公司</th><th>页码</th><th>切块ID</th><th>BM25</th><th>向量相似度</th><th>融合分数</th></tr>
+<tr><td>1</td><td>科大讯飞</td><td>6</td><td><code>62240b7838ec8f10dc31</code></td><td>68.417436</td><td>0.077622</td><td>0.511140</td></tr>
+<tr><td>2</td><td>中科曙光</td><td>12</td><td><code>3b42fa4fc7fb07c7991a</code></td><td>65.278387</td><td>0.059685</td><td>0.480069</td></tr>
+<tr><td>3</td><td>科大讯飞</td><td>36</td><td><code>66f45cf538f594e044bd</code></td><td>55.260657</td><td>0.047627</td><td>0.404861</td></tr>
+<tr><td>4</td><td>科大讯飞</td><td>36</td><td><code>e91f5569c8b653d43ade</code></td><td>48.697112</td><td>0.086089</td><td>0.380156</td></tr>
+<tr><td>5</td><td>科大讯飞</td><td>230</td><td><code>1f666fbb99e9b8947e8d</code></td><td>48.405418</td><td>0.055956</td><td>0.362182</td></tr>
+<tr><td>6</td><td>科大讯飞</td><td>74</td><td><code>a05ebea839d580b76590</code></td><td>46.209375</td><td>0.082374</td><td>0.361098</td></tr>
+<tr><td>7</td><td>科大讯飞</td><td>30</td><td><code>d3e9d3b63332061bbf37</code></td><td>46.149789</td><td>0.010713</td><td>0.322708</td></tr>
+<tr><td>8</td><td>科大讯飞</td><td>193</td><td><code>5b05e86e129d20b143f4</code></td><td>46.101221</td><td>0.124460</td><td>0.382661</td></tr>
+<tr><td>9</td><td>润泽科技</td><td>14</td><td><code>3416b50b66bc55c6a7c7</code></td><td>45.152474</td><td>0.075363</td><td>0.350121</td></tr>
+<tr><td>10</td><td>科大讯飞</td><td>193</td><td><code>14e7bc1432699e2efd88</code></td><td>45.123522</td><td>-0.077946</td><td>0.309980</td></tr>
+<tr><td>11</td><td>科大讯飞</td><td>268</td><td><code>5e86fabb28c2ce49b14c</code></td><td>44.790066</td><td>0.038165</td><td>0.327917</td></tr>
+<tr><td>12</td><td>科大讯飞</td><td>12</td><td><code>f12422f9d850588c2d93</code></td><td>43.571404</td><td>-0.008448</td><td>0.299318</td></tr>
+</table></div>
+<h3>vector · Top12</h3><div class="scroll"><table><tr><th>排名</th><th>公司</th><th>页码</th><th>切块ID</th><th>BM25</th><th>向量相似度</th><th>融合分数</th></tr>
+<tr><td>1</td><td>科大讯飞</td><td>159</td><td><code>dddda100b9b34aec38d0</code></td><td>23.925838</td><td>0.218008</td><td>0.279905</td></tr>
+<tr><td>2</td><td>科大讯飞</td><td>222</td><td><code>b8fda6a62d8970224d4e</code></td><td>29.569668</td><td>0.207418</td><td>0.313063</td></tr>
+<tr><td>3</td><td>三六零</td><td>21</td><td><code>03d33ecd2e2b24acd7f7</code></td><td>19.074016</td><td>0.205289</td><td>0.239834</td></tr>
+<tr><td>4</td><td>润泽科技</td><td>12</td><td><code>ebb37f9c0afce33ed56f</code></td><td>36.718539</td><td>0.200330</td><td>0.358416</td></tr>
+<tr><td>5</td><td>科大讯飞</td><td>57</td><td><code>eccedb45c7a690069002</code></td><td>19.694848</td><td>0.194732</td><td>0.238504</td></tr>
+<tr><td>6</td><td>中科曙光</td><td>14</td><td><code>301f6a6f91803e02bc64</code></td><td>18.643167</td><td>0.193331</td><td>0.230537</td></tr>
+<tr><td>7</td><td>科大讯飞</td><td>190</td><td><code>d062101c317dfcf2729e</code></td><td>29.186776</td><td>0.193078</td><td>0.302833</td></tr>
+<tr><td>8</td><td>三六零</td><td>10</td><td><code>832c7cbf98cce2c2ba17</code></td><td>3.135629</td><td>0.191210</td><td>0.122882</td></tr>
+<tr><td>9</td><td>科大讯飞</td><td>184</td><td><code>cfba96751e2720006ce4</code></td><td>23.750787</td><td>0.190989</td><td>0.264383</td></tr>
+<tr><td>10</td><td>科大讯飞</td><td>43</td><td><code>5d09beac40aab88a2b5d</code></td><td>28.058726</td><td>0.186696</td><td>0.291701</td></tr>
+<tr><td>11</td><td>科大讯飞</td><td>151</td><td><code>6ea72d48d94cf991341b</code></td><td>31.812742</td><td>0.182638</td><td>0.315339</td></tr>
+<tr><td>12</td><td>海光信息</td><td>25</td><td><code>18a0c090be2f72569cf4</code></td><td>18.670602</td><td>0.177301</td><td>0.222229</td></tr>
+</table></div>
+<h3>fusion · Top12</h3><div class="scroll"><table><tr><th>排名</th><th>公司</th><th>页码</th><th>切块ID</th><th>BM25</th><th>向量相似度</th><th>融合分数</th></tr>
+<tr><td>1</td><td>科大讯飞</td><td>6</td><td><code>62240b7838ec8f10dc31</code></td><td>68.417436</td><td>0.077622</td><td>0.511140</td></tr>
+<tr><td>2</td><td>中科曙光</td><td>12</td><td><code>3b42fa4fc7fb07c7991a</code></td><td>65.278387</td><td>0.059685</td><td>0.480069</td></tr>
+<tr><td>3</td><td>科大讯飞</td><td>36</td><td><code>66f45cf538f594e044bd</code></td><td>55.260657</td><td>0.047627</td><td>0.404861</td></tr>
+<tr><td>4</td><td>科大讯飞</td><td>193</td><td><code>5b05e86e129d20b143f4</code></td><td>46.101221</td><td>0.124460</td><td>0.382661</td></tr>
+<tr><td>5</td><td>科大讯飞</td><td>36</td><td><code>e91f5569c8b653d43ade</code></td><td>48.697112</td><td>0.086089</td><td>0.380156</td></tr>
+<tr><td>6</td><td>科大讯飞</td><td>230</td><td><code>1f666fbb99e9b8947e8d</code></td><td>48.405418</td><td>0.055956</td><td>0.362182</td></tr>
+<tr><td>7</td><td>科大讯飞</td><td>74</td><td><code>a05ebea839d580b76590</code></td><td>46.209375</td><td>0.082374</td><td>0.361098</td></tr>
+<tr><td>8</td><td>润泽科技</td><td>12</td><td><code>ebb37f9c0afce33ed56f</code></td><td>36.718539</td><td>0.200330</td><td>0.358416</td></tr>
+<tr><td>9</td><td>润泽科技</td><td>14</td><td><code>3416b50b66bc55c6a7c7</code></td><td>45.152474</td><td>0.075363</td><td>0.350121</td></tr>
+<tr><td>10</td><td>科大讯飞</td><td>18</td><td><code>682daeed5c1ef7c59ab2</code></td><td>39.712383</td><td>0.145047</td><td>0.349683</td></tr>
+<tr><td>11</td><td>寒武纪</td><td>94</td><td><code>c68669631917fa0c8869</code></td><td>40.131136</td><td>0.116719</td><td>0.337546</td></tr>
+<tr><td>12</td><td>科大讯飞</td><td>268</td><td><code>5e86fabb28c2ce49b14c</code></td><td>44.790066</td><td>0.038165</td><td>0.327917</td></tr>
+</table></div>
+</details>
+<details><summary>Q2 寒武纪2026年上半年营业收入是多少？</summary><p>寒武纪 营业收入：5995573619.61元 [PDF 7页/p0007_t0009/R2C2]</p><p>评价：融合前12不足，需补取；融合公司覆盖：4/12。</p><p>证据Recall@12：bm25 0.0% / vector 0.0% / fusion 0.0%</p>
+<div class="scroll"><table><caption>逐项证据</caption><tr><th>公司／指标</th><th>原值／单位</th><th>PDF／表／行列</th><th>切块ID</th></tr>
+<tr><td>寒武纪 / 营业收入</td><td>5,995,573,619.61 元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-08/1225464969.PDF#page=7'>第7页</a> / p0007_t0009 / R2C2</td><td><code>e0325397afa7da0a08a2</code></td></tr>
+</table></div>
+<h3>bm25 · Top12</h3><div class="scroll"><table><tr><th>排名</th><th>公司</th><th>页码</th><th>切块ID</th><th>BM25</th><th>向量相似度</th><th>融合分数</th></tr>
+<tr><td>1</td><td>寒武纪</td><td>94</td><td><code>c68669631917fa0c8869</code></td><td>67.809368</td><td>0.142299</td><td>0.545418</td></tr>
+<tr><td>2</td><td>中科曙光</td><td>12</td><td><code>3b42fa4fc7fb07c7991a</code></td><td>65.278387</td><td>0.080535</td><td>0.495141</td></tr>
+<tr><td>3</td><td>寒武纪</td><td>94</td><td><code>ccf96a95e4bae673ab14</code></td><td>61.240969</td><td>0.142776</td><td>0.500144</td></tr>
+<tr><td>4</td><td>科大讯飞</td><td>6</td><td><code>62240b7838ec8f10dc31</code></td><td>55.982985</td><td>0.028388</td><td>0.403075</td></tr>
+<tr><td>5</td><td>寒武纪</td><td>133</td><td><code>efb3a7d714593a0cd34a</code></td><td>48.483395</td><td>0.055518</td><td>0.365473</td></tr>
+<tr><td>6</td><td>寒武纪</td><td>26</td><td><code>10d9934ac878d7ea4400</code></td><td>47.682951</td><td>-0.053131</td><td>0.330500</td></tr>
+<tr><td>7</td><td>寒武纪</td><td>10</td><td><code>57514f47330925ac7bc8</code></td><td>46.732959</td><td>-0.033523</td><td>0.323915</td></tr>
+<tr><td>8</td><td>润泽科技</td><td>14</td><td><code>3416b50b66bc55c6a7c7</code></td><td>45.152474</td><td>0.029161</td><td>0.328416</td></tr>
+<tr><td>9</td><td>寒武纪</td><td>172</td><td><code>53eaa7abbbb71011c223</code></td><td>44.723814</td><td>0.056079</td><td>0.339712</td></tr>
+<tr><td>10</td><td>寒武纪</td><td>172</td><td><code>a6de84922a84cc69b010</code></td><td>44.116514</td><td>0.010701</td><td>0.311452</td></tr>
+<tr><td>11</td><td>寒武纪</td><td>133</td><td><code>7df76e4e62124d8f115d</code></td><td>44.065543</td><td>0.085635</td><td>0.350814</td></tr>
+<tr><td>12</td><td>寒武纪</td><td>18</td><td><code>3153233469c0cdfdb6fd</code></td><td>42.525722</td><td>0.017149</td><td>0.303843</td></tr>
+</table></div>
+<h3>vector · Top12</h3><div class="scroll"><table><tr><th>排名</th><th>公司</th><th>页码</th><th>切块ID</th><th>BM25</th><th>向量相似度</th><th>融合分数</th></tr>
+<tr><td>1</td><td>润泽科技</td><td>12</td><td><code>ebb37f9c0afce33ed56f</code></td><td>36.718539</td><td>0.205587</td><td>0.363464</td></tr>
+<tr><td>2</td><td>三六零</td><td>10</td><td><code>832c7cbf98cce2c2ba17</code></td><td>3.135629</td><td>0.192728</td><td>0.123880</td></tr>
+<tr><td>3</td><td>三六零</td><td>102</td><td><code>9885403ee552b94aee47</code></td><td>1.166785</td><td>0.190107</td><td>0.108844</td></tr>
+<tr><td>4</td><td>中科曙光</td><td>14</td><td><code>301f6a6f91803e02bc64</code></td><td>18.643167</td><td>0.190083</td><td>0.229963</td></tr>
+<tr><td>5</td><td>科大讯飞</td><td>43</td><td><code>5d09beac40aab88a2b5d</code></td><td>3.667308</td><td>0.189162</td><td>0.125675</td></tr>
+<tr><td>6</td><td>中际旭创</td><td>94</td><td><code>4879ba608c8f61919395</code></td><td>1.091131</td><td>0.186893</td><td>0.106616</td></tr>
+<tr><td>7</td><td>三六零</td><td>24</td><td><code>effd3b252822ad9e247d</code></td><td>0.000000</td><td>0.186890</td><td>0.099052</td></tr>
+<tr><td>8</td><td>润泽科技</td><td>24</td><td><code>16d1d0df9af84df9f50b</code></td><td>0.000000</td><td>0.184676</td><td>0.097878</td></tr>
+<tr><td>9</td><td>三六零</td><td>11</td><td><code>5c6bbacdf19e64dd5daf</code></td><td>7.122011</td><td>0.182793</td><td>0.146244</td></tr>
+<tr><td>10</td><td>科大讯飞</td><td>222</td><td><code>b8fda6a62d8970224d4e</code></td><td>0.000000</td><td>0.180524</td><td>0.095678</td></tr>
+<tr><td>11</td><td>寒武纪</td><td>139</td><td><code>b273e653282eb8d5a444</code></td><td>22.824078</td><td>0.179816</td><td>0.253500</td></tr>
+<tr><td>12</td><td>金山办公</td><td>23</td><td><code>d54d40df666b33cd68df</code></td><td>21.609303</td><td>0.178917</td><td>0.244604</td></tr>
+</table></div>
+<h3>fusion · Top12</h3><div class="scroll"><table><tr><th>排名</th><th>公司</th><th>页码</th><th>切块ID</th><th>BM25</th><th>向量相似度</th><th>融合分数</th></tr>
+<tr><td>1</td><td>寒武纪</td><td>94</td><td><code>c68669631917fa0c8869</code></td><td>67.809368</td><td>0.142299</td><td>0.545418</td></tr>
+<tr><td>2</td><td>寒武纪</td><td>94</td><td><code>ccf96a95e4bae673ab14</code></td><td>61.240969</td><td>0.142776</td><td>0.500144</td></tr>
+<tr><td>3</td><td>中科曙光</td><td>12</td><td><code>3b42fa4fc7fb07c7991a</code></td><td>65.278387</td><td>0.080535</td><td>0.495141</td></tr>
+<tr><td>4</td><td>科大讯飞</td><td>6</td><td><code>62240b7838ec8f10dc31</code></td><td>55.982985</td><td>0.028388</td><td>0.403075</td></tr>
+<tr><td>5</td><td>寒武纪</td><td>133</td><td><code>efb3a7d714593a0cd34a</code></td><td>48.483395</td><td>0.055518</td><td>0.365473</td></tr>
+<tr><td>6</td><td>润泽科技</td><td>12</td><td><code>ebb37f9c0afce33ed56f</code></td><td>36.718539</td><td>0.205587</td><td>0.363464</td></tr>
+<tr><td>7</td><td>寒武纪</td><td>133</td><td><code>7df76e4e62124d8f115d</code></td><td>44.065543</td><td>0.085635</td><td>0.350814</td></tr>
+<tr><td>8</td><td>寒武纪</td><td>134</td><td><code>ae985630393736f09a29</code></td><td>41.379107</td><td>0.112460</td><td>0.346411</td></tr>
+<tr><td>9</td><td>寒武纪</td><td>172</td><td><code>53eaa7abbbb71011c223</code></td><td>44.723814</td><td>0.056079</td><td>0.339712</td></tr>
+<tr><td>10</td><td>寒武纪</td><td>62</td><td><code>eaa1303b4cab3e63eb9c</code></td><td>39.424063</td><td>0.122121</td><td>0.337980</td></tr>
+<tr><td>11</td><td>寒武纪</td><td>26</td><td><code>10d9934ac878d7ea4400</code></td><td>47.682951</td><td>-0.053131</td><td>0.330500</td></tr>
+<tr><td>12</td><td>寒武纪</td><td>64</td><td><code>a200a08b88ea91899063</code></td><td>39.915348</td><td>0.098249</td><td>0.328733</td></tr>
+</table></div>
+</details>
+<details><summary>Q3 海光信息2026年上半年营业收入是多少？</summary><p>海光信息 营业收入：9099020774.81元 [PDF 8页/p0008_t0009/R2C2]</p><p>评价：融合前12不足，需补取；融合公司覆盖：5/12。</p><p>证据Recall@12：bm25 0.0% / vector 0.0% / fusion 0.0%</p>
+<div class="scroll"><table><caption>逐项证据</caption><tr><th>公司／指标</th><th>原值／单位</th><th>PDF／表／行列</th><th>切块ID</th></tr>
+<tr><td>海光信息 / 营业收入</td><td>9,099,020,774.81 元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-14/1225472510.PDF#page=8'>第8页</a> / p0008_t0009 / R2C2</td><td><code>9f3a03d7c87af044da5f</code></td></tr>
+</table></div>
+<h3>bm25 · Top12</h3><div class="scroll"><table><tr><th>排名</th><th>公司</th><th>页码</th><th>切块ID</th><th>BM25</th><th>向量相似度</th><th>融合分数</th></tr>
+<tr><td>1</td><td>中科曙光</td><td>12</td><td><code>3b42fa4fc7fb07c7991a</code></td><td>66.738196</td><td>0.054090</td><td>0.498668</td></tr>
+<tr><td>2</td><td>科大讯飞</td><td>6</td><td><code>62240b7838ec8f10dc31</code></td><td>55.982985</td><td>0.028276</td><td>0.409243</td></tr>
+<tr><td>3</td><td>海光信息</td><td>56</td><td><code>6c502ad85c4d77eabeeb</code></td><td>46.022652</td><td>0.100755</td><td>0.377512</td></tr>
+<tr><td>4</td><td>海光信息</td><td>129</td><td><code>93a475085e9941776765</code></td><td>45.346471</td><td>0.051695</td><td>0.346748</td></tr>
+<tr><td>5</td><td>海光信息</td><td>164</td><td><code>27f1560d5f3dd9fa0787</code></td><td>45.185754</td><td>0.122551</td><td>0.383170</td></tr>
+<tr><td>6</td><td>润泽科技</td><td>14</td><td><code>3416b50b66bc55c6a7c7</code></td><td>45.152474</td><td>0.073255</td><td>0.356809</td></tr>
+<tr><td>7</td><td>海光信息</td><td>142</td><td><code>45cb39aeb76c4910b2a3</code></td><td>44.850285</td><td>-0.047316</td><td>0.315856</td></tr>
+<tr><td>8</td><td>海光信息</td><td>128</td><td><code>259a41895798751c1644</code></td><td>43.149744</td><td>0.078580</td><td>0.345527</td></tr>
+<tr><td>9</td><td>海光信息</td><td>164</td><td><code>8b7aafce62b18da1eccc</code></td><td>43.025566</td><td>0.115339</td><td>0.364135</td></tr>
+<tr><td>10</td><td>润泽科技</td><td>11</td><td><code>68723743bcf7e469c2c0</code></td><td>42.410243</td><td>0.053006</td><td>0.326765</td></tr>
+<tr><td>11</td><td>海光信息</td><td>22</td><td><code>cab191dc727c87d55e7b</code></td><td>41.537978</td><td>0.082484</td><td>0.336245</td></tr>
+<tr><td>12</td><td>润泽科技</td><td>11</td><td><code>d79b5c2f85bcf2c9cffc</code></td><td>40.863843</td><td>0.100318</td><td>0.340950</td></tr>
+</table></div>
+<h3>vector · Top12</h3><div class="scroll"><table><tr><th>排名</th><th>公司</th><th>页码</th><th>切块ID</th><th>BM25</th><th>向量相似度</th><th>融合分数</th></tr>
+<tr><td>1</td><td>三六零</td><td>10</td><td><code>832c7cbf98cce2c2ba17</code></td><td>3.135629</td><td>0.233242</td><td>0.145701</td></tr>
+<tr><td>2</td><td>海光信息</td><td>52</td><td><code>2394ae78a96c26bf54bb</code></td><td>26.941226</td><td>0.217594</td><td>0.305057</td></tr>
+<tr><td>3</td><td>润泽科技</td><td>12</td><td><code>ebb37f9c0afce33ed56f</code></td><td>37.596529</td><td>0.214430</td><td>0.378419</td></tr>
+<tr><td>4</td><td>润泽科技</td><td>121</td><td><code>0e3b5b09a4d933d908e1</code></td><td>0.000000</td><td>0.198714</td><td>0.105319</td></tr>
+<tr><td>5</td><td>海光信息</td><td>31</td><td><code>3316e7f68a82dc9ff708</code></td><td>19.092357</td><td>0.193056</td><td>0.236777</td></tr>
+<tr><td>6</td><td>海光信息</td><td>33</td><td><code>a0d2ab83bb759fbb7bb4</code></td><td>27.397527</td><td>0.190526</td><td>0.293924</td></tr>
+<tr><td>7</td><td>中际旭创</td><td>94</td><td><code>4879ba608c8f61919395</code></td><td>1.091131</td><td>0.184162</td><td>0.105290</td></tr>
+<tr><td>8</td><td>中科曙光</td><td>68</td><td><code>49353319e17b3fa46a00</code></td><td>0.801083</td><td>0.183985</td><td>0.103154</td></tr>
+<tr><td>9</td><td>海光信息</td><td>99</td><td><code>58eba7a2016bbbf5729f</code></td><td>22.394354</td><td>0.178952</td><td>0.252555</td></tr>
+<tr><td>10</td><td>拓尔思</td><td>27</td><td><code>ab2d38d6d6f8fa7e2371</code></td><td>3.892188</td><td>0.176906</td><td>0.121171</td></tr>
+<tr><td>11</td><td>拓尔思</td><td>108</td><td><code>dd1fcbf204c3d5e42d89</code></td><td>0.000000</td><td>0.175731</td><td>0.093138</td></tr>
+<tr><td>12</td><td>云天励飞</td><td>115</td><td><code>1f1847b5168a55a0758c</code></td><td>0.000000</td><td>0.175070</td><td>0.092787</td></tr>
+</table></div>
+<h3>fusion · Top12</h3><div class="scroll"><table><tr><th>排名</th><th>公司</th><th>页码</th><th>切块ID</th><th>BM25</th><th>向量相似度</th><th>融合分数</th></tr>
+<tr><td>1</td><td>中科曙光</td><td>12</td><td><code>3b42fa4fc7fb07c7991a</code></td><td>66.738196</td><td>0.054090</td><td>0.498668</td></tr>
+<tr><td>2</td><td>科大讯飞</td><td>6</td><td><code>62240b7838ec8f10dc31</code></td><td>55.982985</td><td>0.028276</td><td>0.409243</td></tr>
+<tr><td>3</td><td>海光信息</td><td>164</td><td><code>27f1560d5f3dd9fa0787</code></td><td>45.185754</td><td>0.122551</td><td>0.383170</td></tr>
+<tr><td>4</td><td>润泽科技</td><td>12</td><td><code>ebb37f9c0afce33ed56f</code></td><td>37.596529</td><td>0.214430</td><td>0.378419</td></tr>
+<tr><td>5</td><td>海光信息</td><td>56</td><td><code>6c502ad85c4d77eabeeb</code></td><td>46.022652</td><td>0.100755</td><td>0.377512</td></tr>
+<tr><td>6</td><td>海光信息</td><td>164</td><td><code>8b7aafce62b18da1eccc</code></td><td>43.025566</td><td>0.115339</td><td>0.364135</td></tr>
+<tr><td>7</td><td>润泽科技</td><td>14</td><td><code>3416b50b66bc55c6a7c7</code></td><td>45.152474</td><td>0.073255</td><td>0.356809</td></tr>
+<tr><td>8</td><td>寒武纪</td><td>94</td><td><code>c68669631917fa0c8869</code></td><td>40.131136</td><td>0.124196</td><td>0.348445</td></tr>
+<tr><td>9</td><td>海光信息</td><td>129</td><td><code>93a475085e9941776765</code></td><td>45.346471</td><td>0.051695</td><td>0.346748</td></tr>
+<tr><td>10</td><td>海光信息</td><td>128</td><td><code>259a41895798751c1644</code></td><td>43.149744</td><td>0.078580</td><td>0.345527</td></tr>
+<tr><td>11</td><td>润泽科技</td><td>11</td><td><code>d79b5c2f85bcf2c9cffc</code></td><td>40.863843</td><td>0.100318</td><td>0.340950</td></tr>
+<tr><td>12</td><td>海光信息</td><td>25</td><td><code>18a0c090be2f72569cf4</code></td><td>37.108476</td><td>0.147048</td><td>0.339270</td></tr>
+</table></div>
+</details>
+<details><summary>Q4 浪潮信息2026年上半年营业收入是多少？</summary><p>浪潮信息 营业收入：84378727200.0元 [PDF 7页/p0007_t0004/R2C4]</p><p>评价：融合前12不足，需补取；融合公司覆盖：4/12。</p><p>证据Recall@12：bm25 0.0% / vector 0.0% / fusion 0.0%</p>
+<div class="scroll"><table><caption>逐项证据</caption><tr><th>公司／指标</th><th>原值／单位</th><th>PDF／表／行列</th><th>切块ID</th></tr>
+<tr><td>浪潮信息 / 营业收入</td><td>8,437,872.72 万元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-29/1225530925.PDF#page=7'>第7页</a> / p0007_t0004 / R2C4</td><td><code>94fd8c3f16d770d4b096</code></td></tr>
+</table></div>
+<h3>bm25 · Top12</h3><div class="scroll"><table><tr><th>排名</th><th>公司</th><th>页码</th><th>切块ID</th><th>BM25</th><th>向量相似度</th><th>融合分数</th></tr>
+<tr><td>1</td><td>中科曙光</td><td>12</td><td><code>3b42fa4fc7fb07c7991a</code></td><td>65.278387</td><td>0.093703</td><td>0.519663</td></tr>
+<tr><td>2</td><td>科大讯飞</td><td>6</td><td><code>62240b7838ec8f10dc31</code></td><td>55.982985</td><td>0.020705</td><td>0.414047</td></tr>
+<tr><td>3</td><td>浪潮信息</td><td>109</td><td><code>93b85d4b4e9a10d859c7</code></td><td>53.667534</td><td>0.106211</td><td>0.442694</td></tr>
+<tr><td>4</td><td>浪潮信息</td><td>40</td><td><code>e03c15e7b4f7e72082c3</code></td><td>53.325456</td><td>0.066601</td><td>0.419238</td></tr>
+<tr><td>5</td><td>浪潮信息</td><td>122</td><td><code>1e1b4f6b2d9bee377283</code></td><td>53.034529</td><td>0.150430</td><td>0.461573</td></tr>
+<tr><td>6</td><td>浪潮信息</td><td>12</td><td><code>ba928cd4788357bd6a8e</code></td><td>52.985224</td><td>0.121573</td><td>0.445924</td></tr>
+<tr><td>7</td><td>浪潮信息</td><td>12</td><td><code>aabaa367fd1b61ce1d2e</code></td><td>51.182233</td><td>0.132616</td><td>0.438795</td></tr>
+<tr><td>8</td><td>浪潮信息</td><td>152</td><td><code>76f81ca10b436e2fdfc2</code></td><td>50.456983</td><td>0.155353</td><td>0.445624</td></tr>
+<tr><td>9</td><td>浪潮信息</td><td>109</td><td><code>d4b8c487667bcc029c56</code></td><td>48.576410</td><td>0.159314</td><td>0.434183</td></tr>
+<tr><td>10</td><td>浪潮信息</td><td>152</td><td><code>34a88f078abb392ccb14</code></td><td>48.187164</td><td>0.090593</td><td>0.394959</td></tr>
+<tr><td>11</td><td>浪潮信息</td><td>109</td><td><code>b89511b14b0cac0d2697</code></td><td>45.297543</td><td>0.072044</td><td>0.364323</td></tr>
+<tr><td>12</td><td>润泽科技</td><td>14</td><td><code>3416b50b66bc55c6a7c7</code></td><td>45.152474</td><td>0.063817</td><td>0.358918</td></tr>
+</table></div>
+<h3>vector · Top12</h3><div class="scroll"><table><tr><th>排名</th><th>公司</th><th>页码</th><th>切块ID</th><th>BM25</th><th>向量相似度</th><th>融合分数</th></tr>
+<tr><td>1</td><td>浪潮信息</td><td>83</td><td><code>ba534959d9cfa3558839</code></td><td>29.998515</td><td>0.254657</td><td>0.350955</td></tr>
+<tr><td>2</td><td>浪潮信息</td><td>83</td><td><code>4e4742eb40dc4da128ad</code></td><td>27.946114</td><td>0.217752</td><td>0.316619</td></tr>
+<tr><td>3</td><td>浪潮信息</td><td>146</td><td><code>b585377c5bdce97eedef</code></td><td>29.788351</td><td>0.214102</td><td>0.327948</td></tr>
+<tr><td>4</td><td>三六零</td><td>10</td><td><code>832c7cbf98cce2c2ba17</code></td><td>3.135629</td><td>0.201212</td><td>0.129219</td></tr>
+<tr><td>5</td><td>浪潮信息</td><td>146</td><td><code>163d00e04c721ae83cf7</code></td><td>27.701915</td><td>0.200372</td><td>0.305649</td></tr>
+<tr><td>6</td><td>浪潮信息</td><td>151</td><td><code>b5641ac82108bf86fb5b</code></td><td>30.525886</td><td>0.199382</td><td>0.325457</td></tr>
+<tr><td>7</td><td>浪潮信息</td><td>106</td><td><code>48be7311cc41a0511c0e</code></td><td>28.052094</td><td>0.198027</td><td>0.306927</td></tr>
+<tr><td>8</td><td>浪潮信息</td><td>110</td><td><code>d1c9a6e3c6719439a381</code></td><td>25.816617</td><td>0.193590</td><td>0.288481</td></tr>
+<tr><td>9</td><td>浪潮信息</td><td>43</td><td><code>1f3d8153e30299b784d1</code></td><td>33.965142</td><td>0.189978</td><td>0.345235</td></tr>
+<tr><td>10</td><td>浪潮信息</td><td>113</td><td><code>26bea957a6c5c8b5855a</code></td><td>29.702395</td><td>0.186679</td><td>0.312795</td></tr>
+<tr><td>11</td><td>中科曙光</td><td>14</td><td><code>301f6a6f91803e02bc64</code></td><td>18.643167</td><td>0.180857</td><td>0.230084</td></tr>
+<tr><td>12</td><td>中科曙光</td><td>41</td><td><code>5b07d51163a6aa3ffe9e</code></td><td>30.171764</td><td>0.179916</td><td>0.312590</td></tr>
+</table></div>
+<h3>fusion · Top12</h3><div class="scroll"><table><tr><th>排名</th><th>公司</th><th>页码</th><th>切块ID</th><th>BM25</th><th>向量相似度</th><th>融合分数</th></tr>
+<tr><td>1</td><td>中科曙光</td><td>12</td><td><code>3b42fa4fc7fb07c7991a</code></td><td>65.278387</td><td>0.093703</td><td>0.519663</td></tr>
+<tr><td>2</td><td>浪潮信息</td><td>122</td><td><code>1e1b4f6b2d9bee377283</code></td><td>53.034529</td><td>0.150430</td><td>0.461573</td></tr>
+<tr><td>3</td><td>浪潮信息</td><td>12</td><td><code>ba928cd4788357bd6a8e</code></td><td>52.985224</td><td>0.121573</td><td>0.445924</td></tr>
+<tr><td>4</td><td>浪潮信息</td><td>152</td><td><code>76f81ca10b436e2fdfc2</code></td><td>50.456983</td><td>0.155353</td><td>0.445624</td></tr>
+<tr><td>5</td><td>浪潮信息</td><td>109</td><td><code>93b85d4b4e9a10d859c7</code></td><td>53.667534</td><td>0.106211</td><td>0.442694</td></tr>
+<tr><td>6</td><td>浪潮信息</td><td>12</td><td><code>aabaa367fd1b61ce1d2e</code></td><td>51.182233</td><td>0.132616</td><td>0.438795</td></tr>
+<tr><td>7</td><td>浪潮信息</td><td>109</td><td><code>d4b8c487667bcc029c56</code></td><td>48.576410</td><td>0.159314</td><td>0.434183</td></tr>
+<tr><td>8</td><td>浪潮信息</td><td>40</td><td><code>e03c15e7b4f7e72082c3</code></td><td>53.325456</td><td>0.066601</td><td>0.419238</td></tr>
+<tr><td>9</td><td>科大讯飞</td><td>6</td><td><code>62240b7838ec8f10dc31</code></td><td>55.982985</td><td>0.020705</td><td>0.414047</td></tr>
+<tr><td>10</td><td>浪潮信息</td><td>152</td><td><code>34a88f078abb392ccb14</code></td><td>48.187164</td><td>0.090593</td><td>0.394959</td></tr>
+<tr><td>11</td><td>浪潮信息</td><td>109</td><td><code>b89511b14b0cac0d2697</code></td><td>45.297543</td><td>0.072044</td><td>0.364323</td></tr>
+<tr><td>12</td><td>润泽科技</td><td>14</td><td><code>3416b50b66bc55c6a7c7</code></td><td>45.152474</td><td>0.063817</td><td>0.358918</td></tr>
+</table></div>
+</details>
+<details><summary>Q5 中科曙光2026年上半年营业收入是多少？</summary><p>中科曙光 营业收入：7465810151.43元 [PDF 5页/p0005_t0009/R2C2]</p><p>评价：融合前12不足，需补取；融合公司覆盖：4/12。</p><p>证据Recall@12：bm25 0.0% / vector 0.0% / fusion 0.0%</p>
+<div class="scroll"><table><caption>逐项证据</caption><tr><th>公司／指标</th><th>原值／单位</th><th>PDF／表／行列</th><th>切块ID</th></tr>
+<tr><td>中科曙光 / 营业收入</td><td>7,465,810,151.43 元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-26/1225507613.PDF#page=5'>第5页</a> / p0005_t0009 / R2C2</td><td><code>eecc5f9546bb7ea5c32e</code></td></tr>
+</table></div>
+<h3>bm25 · Top12</h3><div class="scroll"><table><tr><th>排名</th><th>公司</th><th>页码</th><th>切块ID</th><th>BM25</th><th>向量相似度</th><th>融合分数</th></tr>
+<tr><td>1</td><td>中科曙光</td><td>12</td><td><code>3b42fa4fc7fb07c7991a</code></td><td>77.083861</td><td>0.116115</td><td>0.531541</td></tr>
+<tr><td>2</td><td>中科曙光</td><td>41</td><td><code>5b07d51163a6aa3ffe9e</code></td><td>56.787625</td><td>0.144052</td><td>0.422596</td></tr>
+<tr><td>3</td><td>科大讯飞</td><td>6</td><td><code>62240b7838ec8f10dc31</code></td><td>55.982985</td><td>0.060575</td><td>0.373447</td></tr>
+<tr><td>4</td><td>中科曙光</td><td>39</td><td><code>b99be24f3d0d6b364157</code></td><td>53.269192</td><td>0.126570</td><td>0.391878</td></tr>
+<tr><td>5</td><td>中科曙光</td><td>159</td><td><code>a3e30c449309e13b7136</code></td><td>53.087809</td><td>0.048495</td><td>0.349392</td></tr>
+<tr><td>6</td><td>中科曙光</td><td>137</td><td><code>1d49c98e0cd5a6715d3b</code></td><td>49.276768</td><td>0.002278</td><td>0.301661</td></tr>
+<tr><td>7</td><td>中科曙光</td><td>189</td><td><code>909f491a203826ad90f2</code></td><td>49.203986</td><td>0.128140</td><td>0.367923</td></tr>
+<tr><td>8</td><td>中科曙光</td><td>136</td><td><code>a4b310ae5ce1327167cf</code></td><td>48.856865</td><td>0.058530</td><td>0.328914</td></tr>
+<tr><td>9</td><td>中科曙光</td><td>189</td><td><code>87e09718469a18173f2c</code></td><td>48.631645</td><td>0.144296</td><td>0.372997</td></tr>
+<tr><td>10</td><td>中科曙光</td><td>18</td><td><code>29aac86e191d6524577b</code></td><td>46.427917</td><td>0.030400</td><td>0.299195</td></tr>
+<tr><td>11</td><td>中科曙光</td><td>189</td><td><code>9ee729ab6305625f1594</code></td><td>45.629356</td><td>0.029787</td><td>0.294001</td></tr>
+<tr><td>12</td><td>润泽科技</td><td>14</td><td><code>3416b50b66bc55c6a7c7</code></td><td>45.152474</td><td>0.049441</td><td>0.301510</td></tr>
+</table></div>
+<h3>vector · Top12</h3><div class="scroll"><table><tr><th>排名</th><th>公司</th><th>页码</th><th>切块ID</th><th>BM25</th><th>向量相似度</th><th>融合分数</th></tr>
+<tr><td>1</td><td>科大讯飞</td><td>43</td><td><code>5d09beac40aab88a2b5d</code></td><td>3.667308</td><td>0.204333</td><td>0.130657</td></tr>
+<tr><td>2</td><td>中科曙光</td><td>68</td><td><code>49353319e17b3fa46a00</code></td><td>8.645544</td><td>0.203606</td><td>0.160625</td></tr>
+<tr><td>3</td><td>润泽科技</td><td>12</td><td><code>ebb37f9c0afce33ed56f</code></td><td>37.596529</td><td>0.201964</td><td>0.336276</td></tr>
+<tr><td>4</td><td>三六零</td><td>10</td><td><code>832c7cbf98cce2c2ba17</code></td><td>3.135629</td><td>0.197256</td><td>0.123665</td></tr>
+<tr><td>5</td><td>中科曙光</td><td>130</td><td><code>8adf9bf637ab5e645b9b</code></td><td>28.853706</td><td>0.196713</td><td>0.280186</td></tr>
+<tr><td>6</td><td>中际旭创</td><td>93</td><td><code>62766b4f4d5ca6a8584c</code></td><td>2.003462</td><td>0.190646</td><td>0.113258</td></tr>
+<tr><td>7</td><td>三六零</td><td>102</td><td><code>9885403ee552b94aee47</code></td><td>1.166785</td><td>0.185386</td><td>0.105369</td></tr>
+<tr><td>8</td><td>中科曙光</td><td>132</td><td><code>e9b1fe2dc29e5b3ec23c</code></td><td>29.405236</td><td>0.183069</td><td>0.276318</td></tr>
+<tr><td>9</td><td>拓尔思</td><td>27</td><td><code>ab2d38d6d6f8fa7e2371</code></td><td>3.892188</td><td>0.181769</td><td>0.120069</td></tr>
+<tr><td>10</td><td>中科曙光</td><td>94</td><td><code>31e751ef62d5d91f9577</code></td><td>27.706839</td><td>0.178267</td><td>0.263417</td></tr>
+<tr><td>11</td><td>中科曙光</td><td>143</td><td><code>0b0a7a98382c9eb40f8b</code></td><td>26.163198</td><td>0.176228</td><td>0.252925</td></tr>
+<tr><td>12</td><td>中际旭创</td><td>94</td><td><code>4879ba608c8f61919395</code></td><td>1.091131</td><td>0.176101</td><td>0.099986</td></tr>
+</table></div>
+<h3>fusion · Top12</h3><div class="scroll"><table><tr><th>排名</th><th>公司</th><th>页码</th><th>切块ID</th><th>BM25</th><th>向量相似度</th><th>融合分数</th></tr>
+<tr><td>1</td><td>中科曙光</td><td>12</td><td><code>3b42fa4fc7fb07c7991a</code></td><td>77.083861</td><td>0.116115</td><td>0.531541</td></tr>
+<tr><td>2</td><td>中科曙光</td><td>41</td><td><code>5b07d51163a6aa3ffe9e</code></td><td>56.787625</td><td>0.144052</td><td>0.422596</td></tr>
+<tr><td>3</td><td>中科曙光</td><td>39</td><td><code>b99be24f3d0d6b364157</code></td><td>53.269192</td><td>0.126570</td><td>0.391878</td></tr>
+<tr><td>4</td><td>科大讯飞</td><td>6</td><td><code>62240b7838ec8f10dc31</code></td><td>55.982985</td><td>0.060575</td><td>0.373447</td></tr>
+<tr><td>5</td><td>中科曙光</td><td>189</td><td><code>87e09718469a18173f2c</code></td><td>48.631645</td><td>0.144296</td><td>0.372997</td></tr>
+<tr><td>6</td><td>中科曙光</td><td>189</td><td><code>909f491a203826ad90f2</code></td><td>49.203986</td><td>0.128140</td><td>0.367923</td></tr>
+<tr><td>7</td><td>中科曙光</td><td>159</td><td><code>a3e30c449309e13b7136</code></td><td>53.087809</td><td>0.048495</td><td>0.349392</td></tr>
+<tr><td>8</td><td>中科曙光</td><td>14</td><td><code>301f6a6f91803e02bc64</code></td><td>42.133780</td><td>0.162942</td><td>0.343260</td></tr>
+<tr><td>9</td><td>润泽科技</td><td>12</td><td><code>ebb37f9c0afce33ed56f</code></td><td>37.596529</td><td>0.201964</td><td>0.336276</td></tr>
+<tr><td>10</td><td>中科曙光</td><td>136</td><td><code>a4b310ae5ce1327167cf</code></td><td>48.856865</td><td>0.058530</td><td>0.328914</td></tr>
+<tr><td>11</td><td>寒武纪</td><td>94</td><td><code>c68669631917fa0c8869</code></td><td>40.131136</td><td>0.152409</td><td>0.325467</td></tr>
+<tr><td>12</td><td>中科曙光</td><td>78</td><td><code>11c0653435cf9c157430</code></td><td>38.972720</td><td>0.125128</td><td>0.303945</td></tr>
+</table></div>
+</details>
+<details><summary>Q6 金山办公2026年上半年营业收入是多少？</summary><p>金山办公 营业收入：3313262599.2元 [PDF 6页/p0006_t0006/R2C2]</p><p>评价：融合前12不足，需补取；融合公司覆盖：5/12。</p><p>证据Recall@12：bm25 0.0% / vector 0.0% / fusion 0.0%</p>
+<div class="scroll"><table><caption>逐项证据</caption><tr><th>公司／指标</th><th>原值／单位</th><th>PDF／表／行列</th><th>切块ID</th></tr>
+<tr><td>金山办公 / 营业收入</td><td>3,313,262,599.20 元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-20/1225482678.PDF#page=6'>第6页</a> / p0006_t0006 / R2C2</td><td><code>6a75d44f9cebe0d54422</code></td></tr>
+</table></div>
+<h3>bm25 · Top12</h3><div class="scroll"><table><tr><th>排名</th><th>公司</th><th>页码</th><th>切块ID</th><th>BM25</th><th>向量相似度</th><th>融合分数</th></tr>
+<tr><td>1</td><td>中科曙光</td><td>12</td><td><code>3b42fa4fc7fb07c7991a</code></td><td>65.278387</td><td>0.065546</td><td>0.504739</td></tr>
+<tr><td>2</td><td>科大讯飞</td><td>6</td><td><code>62240b7838ec8f10dc31</code></td><td>59.642026</td><td>0.063225</td><td>0.462928</td></tr>
+<tr><td>3</td><td>金山办公</td><td>34</td><td><code>9a1a44004d65e86cc624</code></td><td>54.005228</td><td>0.029422</td><td>0.404428</td></tr>
+<tr><td>4</td><td>金山办公</td><td>12</td><td><code>904d1eee8d7209986ee9</code></td><td>52.727489</td><td>-0.056192</td><td>0.379634</td></tr>
+<tr><td>5</td><td>金山办公</td><td>59</td><td><code>32c3bb701eadf40820ef</code></td><td>52.716896</td><td>0.131907</td><td>0.449469</td></tr>
+<tr><td>6</td><td>金山办公</td><td>197</td><td><code>478bbe476d866d6df7fa</code></td><td>49.414881</td><td>0.117143</td><td>0.417870</td></tr>
+<tr><td>7</td><td>金山办公</td><td>142</td><td><code>166ad6352fe9108e82eb</code></td><td>47.136766</td><td>-0.045543</td><td>0.339382</td></tr>
+<tr><td>8</td><td>金山办公</td><td>27</td><td><code>01e3b8ac1bba04c95cd0</code></td><td>47.118213</td><td>0.045925</td><td>0.363588</td></tr>
+<tr><td>9</td><td>润泽科技</td><td>14</td><td><code>3416b50b66bc55c6a7c7</code></td><td>45.152474</td><td>0.042126</td><td>0.347422</td></tr>
+<tr><td>10</td><td>润泽科技</td><td>11</td><td><code>68723743bcf7e469c2c0</code></td><td>44.377419</td><td>0.019853</td><td>0.330036</td></tr>
+<tr><td>11</td><td>金山办公</td><td>6</td><td><code>eadb668c01f17551a269</code></td><td>43.733492</td><td>0.035228</td><td>0.333549</td></tr>
+<tr><td>12</td><td>金山办公</td><td>29</td><td><code>46c79b41b5949e347ad8</code></td><td>42.526342</td><td>0.162866</td><td>0.392506</td></tr>
+</table></div>
+<h3>vector · Top12</h3><div class="scroll"><table><tr><th>排名</th><th>公司</th><th>页码</th><th>切块ID</th><th>BM25</th><th>向量相似度</th><th>融合分数</th></tr>
+<tr><td>1</td><td>三六零</td><td>10</td><td><code>832c7cbf98cce2c2ba17</code></td><td>7.718642</td><td>0.205964</td><td>0.164734</td></tr>
+<tr><td>2</td><td>三六零</td><td>102</td><td><code>9885403ee552b94aee47</code></td><td>1.166785</td><td>0.198719</td><td>0.113722</td></tr>
+<tr><td>3</td><td>云天励飞</td><td>115</td><td><code>1f1847b5168a55a0758c</code></td><td>0.000000</td><td>0.192872</td><td>0.102222</td></tr>
+<tr><td>4</td><td>润泽科技</td><td>24</td><td><code>16d1d0df9af84df9f50b</code></td><td>0.000000</td><td>0.187015</td><td>0.099118</td></tr>
+<tr><td>5</td><td>科大讯飞</td><td>43</td><td><code>5d09beac40aab88a2b5d</code></td><td>3.667308</td><td>0.185591</td><td>0.124768</td></tr>
+<tr><td>6</td><td>中科曙光</td><td>159</td><td><code>f38a6c08a6f164131fb8</code></td><td>0.000000</td><td>0.185358</td><td>0.098240</td></tr>
+<tr><td>7</td><td>中科曙光</td><td>14</td><td><code>301f6a6f91803e02bc64</code></td><td>18.643167</td><td>0.181162</td><td>0.230245</td></tr>
+<tr><td>8</td><td>润泽科技</td><td>12</td><td><code>ebb37f9c0afce33ed56f</code></td><td>36.718539</td><td>0.180154</td><td>0.359853</td></tr>
+<tr><td>9</td><td>金山办公</td><td>26</td><td><code>af9d8a2872a910eeea01</code></td><td>27.530750</td><td>0.179642</td><td>0.293430</td></tr>
+<tr><td>10</td><td>浪潮信息</td><td>122</td><td><code>3aee7ac9d70530718539</code></td><td>2.798927</td><td>0.177349</td><td>0.114147</td></tr>
+<tr><td>11</td><td>三六零</td><td>21</td><td><code>03d33ecd2e2b24acd7f7</code></td><td>19.074016</td><td>0.177219</td><td>0.231257</td></tr>
+<tr><td>12</td><td>中际旭创</td><td>94</td><td><code>4879ba608c8f61919395</code></td><td>1.091131</td><td>0.174477</td><td>0.100329</td></tr>
+</table></div>
+<h3>fusion · Top12</h3><div class="scroll"><table><tr><th>排名</th><th>公司</th><th>页码</th><th>切块ID</th><th>BM25</th><th>向量相似度</th><th>融合分数</th></tr>
+<tr><td>1</td><td>中科曙光</td><td>12</td><td><code>3b42fa4fc7fb07c7991a</code></td><td>65.278387</td><td>0.065546</td><td>0.504739</td></tr>
+<tr><td>2</td><td>科大讯飞</td><td>6</td><td><code>62240b7838ec8f10dc31</code></td><td>59.642026</td><td>0.063225</td><td>0.462928</td></tr>
+<tr><td>3</td><td>金山办公</td><td>59</td><td><code>32c3bb701eadf40820ef</code></td><td>52.716896</td><td>0.131907</td><td>0.449469</td></tr>
+<tr><td>4</td><td>金山办公</td><td>197</td><td><code>478bbe476d866d6df7fa</code></td><td>49.414881</td><td>0.117143</td><td>0.417870</td></tr>
+<tr><td>5</td><td>金山办公</td><td>34</td><td><code>9a1a44004d65e86cc624</code></td><td>54.005228</td><td>0.029422</td><td>0.404428</td></tr>
+<tr><td>6</td><td>金山办公</td><td>29</td><td><code>46c79b41b5949e347ad8</code></td><td>42.526342</td><td>0.162866</td><td>0.392506</td></tr>
+<tr><td>7</td><td>金山办公</td><td>23</td><td><code>d54d40df666b33cd68df</code></td><td>41.732662</td><td>0.161372</td><td>0.385999</td></tr>
+<tr><td>8</td><td>金山办公</td><td>12</td><td><code>904d1eee8d7209986ee9</code></td><td>52.727489</td><td>-0.056192</td><td>0.379634</td></tr>
+<tr><td>9</td><td>寒武纪</td><td>94</td><td><code>c68669631917fa0c8869</code></td><td>41.258561</td><td>0.140349</td><td>0.371444</td></tr>
+<tr><td>10</td><td>金山办公</td><td>193</td><td><code>229abfb4378f31ab59ee</code></td><td>40.769295</td><td>0.144121</td><td>0.369920</td></tr>
+<tr><td>11</td><td>金山办公</td><td>27</td><td><code>01e3b8ac1bba04c95cd0</code></td><td>47.118213</td><td>0.045925</td><td>0.363588</td></tr>
+<tr><td>12</td><td>润泽科技</td><td>12</td><td><code>ebb37f9c0afce33ed56f</code></td><td>36.718539</td><td>0.180154</td><td>0.359853</td></tr>
+</table></div>
+</details>
+<details><summary>Q7 三六零2026年上半年营业收入是多少？</summary><p>三六零 营业收入：4172122000.0元 [PDF 8页/p0008_t0010/R2C2]</p><p>评价：融合前12不足，需补取；融合公司覆盖：5/12。</p><p>证据Recall@12：bm25 0.0% / vector 0.0% / fusion 0.0%</p>
+<div class="scroll"><table><caption>逐项证据</caption><tr><th>公司／指标</th><th>原值／单位</th><th>PDF／表／行列</th><th>切块ID</th></tr>
+<tr><td>三六零 / 营业收入</td><td>4,172,122 千元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-20/1225483359.PDF#page=8'>第8页</a> / p0008_t0010 / R2C2</td><td><code>f4a7606da1af0a655a85</code></td></tr>
+</table></div>
+<h3>bm25 · Top12</h3><div class="scroll"><table><tr><th>排名</th><th>公司</th><th>页码</th><th>切块ID</th><th>BM25</th><th>向量相似度</th><th>融合分数</th></tr>
+<tr><td>1</td><td>中科曙光</td><td>12</td><td><code>3b42fa4fc7fb07c7991a</code></td><td>65.278387</td><td>0.073218</td><td>0.508806</td></tr>
+<tr><td>2</td><td>科大讯飞</td><td>6</td><td><code>62240b7838ec8f10dc31</code></td><td>55.982985</td><td>0.060928</td><td>0.435365</td></tr>
+<tr><td>3</td><td>三六零</td><td>179</td><td><code>7277675f933bfb7b4193</code></td><td>47.527079</td><td>0.054900</td><td>0.371289</td></tr>
+<tr><td>4</td><td>润泽科技</td><td>14</td><td><code>3416b50b66bc55c6a7c7</code></td><td>45.152474</td><td>0.071043</td><td>0.362748</td></tr>
+<tr><td>5</td><td>三六零</td><td>24</td><td><code>680ca3e8f165a346557f</code></td><td>44.265541</td><td>0.013288</td><td>0.325752</td></tr>
+<tr><td>6</td><td>润泽科技</td><td>11</td><td><code>68723743bcf7e469c2c0</code></td><td>42.410243</td><td>0.030279</td><td>0.321399</td></tr>
+<tr><td>7</td><td>寒武纪</td><td>94</td><td><code>c68669631917fa0c8869</code></td><td>42.110301</td><td>0.101834</td><td>0.357163</td></tr>
+<tr><td>8</td><td>润泽科技</td><td>11</td><td><code>d79b5c2f85bcf2c9cffc</code></td><td>41.840743</td><td>0.076972</td><td>0.342046</td></tr>
+<tr><td>9</td><td>三六零</td><td>26</td><td><code>ec2dfad6c1c7f7c104f4</code></td><td>41.590029</td><td>0.052603</td><td>0.327325</td></tr>
+<tr><td>10</td><td>寒武纪</td><td>10</td><td><code>57514f47330925ac7bc8</code></td><td>40.401530</td><td>-0.013459</td><td>0.290888</td></tr>
+<tr><td>11</td><td>金山办公</td><td>12</td><td><code>904d1eee8d7209986ee9</code></td><td>36.854331</td><td>-0.101422</td><td>0.265349</td></tr>
+<tr><td>12</td><td>润泽科技</td><td>12</td><td><code>ebb37f9c0afce33ed56f</code></td><td>36.718539</td><td>0.185689</td><td>0.362786</td></tr>
+</table></div>
+<h3>vector · Top12</h3><div class="scroll"><table><tr><th>排名</th><th>公司</th><th>页码</th><th>切块ID</th><th>BM25</th><th>向量相似度</th><th>融合分数</th></tr>
+<tr><td>1</td><td>三六零</td><td>10</td><td><code>832c7cbf98cce2c2ba17</code></td><td>9.934554</td><td>0.229637</td><td>0.193236</td></tr>
+<tr><td>2</td><td>三六零</td><td>137</td><td><code>a02a842bb7eff80bdad5</code></td><td>18.092036</td><td>0.201206</td><td>0.236900</td></tr>
+<tr><td>3</td><td>科大讯飞</td><td>43</td><td><code>5d09beac40aab88a2b5d</code></td><td>4.580034</td><td>0.193304</td><td>0.135427</td></tr>
+<tr><td>4</td><td>中际旭创</td><td>94</td><td><code>4879ba608c8f61919395</code></td><td>1.091131</td><td>0.192973</td><td>0.110132</td></tr>
+<tr><td>5</td><td>中科曙光</td><td>159</td><td><code>f38a6c08a6f164131fb8</code></td><td>0.000000</td><td>0.191961</td><td>0.101739</td></tr>
+<tr><td>6</td><td>科大讯飞</td><td>222</td><td><code>b8fda6a62d8970224d4e</code></td><td>0.000000</td><td>0.190298</td><td>0.100858</td></tr>
+<tr><td>7</td><td>三六零</td><td>141</td><td><code>5724d897d6cada925ee5</code></td><td>18.513555</td><td>0.189701</td><td>0.233838</td></tr>
+<tr><td>8</td><td>润泽科技</td><td>12</td><td><code>ebb37f9c0afce33ed56f</code></td><td>36.718539</td><td>0.185689</td><td>0.362786</td></tr>
+<tr><td>9</td><td>三六零</td><td>102</td><td><code>9885403ee552b94aee47</code></td><td>7.426849</td><td>0.182497</td><td>0.150196</td></tr>
+<tr><td>10</td><td>科大讯飞</td><td>57</td><td><code>eccedb45c7a690069002</code></td><td>3.935578</td><td>0.182256</td><td>0.124932</td></tr>
+<tr><td>11</td><td>三六零</td><td>21</td><td><code>03d33ecd2e2b24acd7f7</code></td><td>34.168465</td><td>0.180750</td><td>0.341808</td></tr>
+<tr><td>12</td><td>科大讯飞</td><td>225</td><td><code>76d7768760fe5414d415</code></td><td>0.000000</td><td>0.178355</td><td>0.094528</td></tr>
+</table></div>
+<h3>fusion · Top12</h3><div class="scroll"><table><tr><th>排名</th><th>公司</th><th>页码</th><th>切块ID</th><th>BM25</th><th>向量相似度</th><th>融合分数</th></tr>
+<tr><td>1</td><td>中科曙光</td><td>12</td><td><code>3b42fa4fc7fb07c7991a</code></td><td>65.278387</td><td>0.073218</td><td>0.508806</td></tr>
+<tr><td>2</td><td>科大讯飞</td><td>6</td><td><code>62240b7838ec8f10dc31</code></td><td>55.982985</td><td>0.060928</td><td>0.435365</td></tr>
+<tr><td>3</td><td>三六零</td><td>179</td><td><code>7277675f933bfb7b4193</code></td><td>47.527079</td><td>0.054900</td><td>0.371289</td></tr>
+<tr><td>4</td><td>润泽科技</td><td>12</td><td><code>ebb37f9c0afce33ed56f</code></td><td>36.718539</td><td>0.185689</td><td>0.362786</td></tr>
+<tr><td>5</td><td>润泽科技</td><td>14</td><td><code>3416b50b66bc55c6a7c7</code></td><td>45.152474</td><td>0.071043</td><td>0.362748</td></tr>
+<tr><td>6</td><td>寒武纪</td><td>94</td><td><code>c68669631917fa0c8869</code></td><td>42.110301</td><td>0.101834</td><td>0.357163</td></tr>
+<tr><td>7</td><td>润泽科技</td><td>11</td><td><code>d79b5c2f85bcf2c9cffc</code></td><td>41.840743</td><td>0.076972</td><td>0.342046</td></tr>
+<tr><td>8</td><td>三六零</td><td>21</td><td><code>03d33ecd2e2b24acd7f7</code></td><td>34.168465</td><td>0.180750</td><td>0.341808</td></tr>
+<tr><td>9</td><td>三六零</td><td>26</td><td><code>ec2dfad6c1c7f7c104f4</code></td><td>41.590029</td><td>0.052603</td><td>0.327325</td></tr>
+<tr><td>10</td><td>三六零</td><td>24</td><td><code>680ca3e8f165a346557f</code></td><td>44.265541</td><td>0.013288</td><td>0.325752</td></tr>
+<tr><td>11</td><td>三六零</td><td>64</td><td><code>00ea0561ec76c9ba8987</code></td><td>36.407568</td><td>0.119030</td><td>0.325218</td></tr>
+<tr><td>12</td><td>润泽科技</td><td>11</td><td><code>68723743bcf7e469c2c0</code></td><td>42.410243</td><td>0.030279</td><td>0.321399</td></tr>
+</table></div>
+</details>
+<details><summary>Q8 昆仑万维2026年上半年营业收入是多少？</summary><p>昆仑万维 营业收入：5359200218.63元 [PDF 12页/p0012_t0004/R2C2]</p><p>评价：融合前12不足，需补取；融合公司覆盖：3/12。</p><p>证据Recall@12：bm25 0.0% / vector 0.0% / fusion 0.0%</p>
+<div class="scroll"><table><caption>逐项证据</caption><tr><th>公司／指标</th><th>原值／单位</th><th>PDF／表／行列</th><th>切块ID</th></tr>
+<tr><td>昆仑万维 / 营业收入</td><td>5,359,200,218.63 元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-20/1225483546.PDF#page=12'>第12页</a> / p0012_t0004 / R2C2</td><td><code>00bdac0a6f0388a7ef00</code></td></tr>
+</table></div>
+<h3>bm25 · Top12</h3><div class="scroll"><table><tr><th>排名</th><th>公司</th><th>页码</th><th>切块ID</th><th>BM25</th><th>向量相似度</th><th>融合分数</th></tr>
+<tr><td>1</td><td>中科曙光</td><td>12</td><td><code>3b42fa4fc7fb07c7991a</code></td><td>67.915667</td><td>0.028391</td><td>0.485047</td></tr>
+<tr><td>2</td><td>昆仑万维</td><td>199</td><td><code>701d1fc3fa8ecf301330</code></td><td>59.772336</td><td>0.115899</td><td>0.475072</td></tr>
+<tr><td>3</td><td>昆仑万维</td><td>210</td><td><code>0e4ffd472ce6667a102b</code></td><td>59.390979</td><td>0.125645</td><td>0.477598</td></tr>
+<tr><td>4</td><td>昆仑万维</td><td>28</td><td><code>fa13c94b6f30584d4a3e</code></td><td>57.764704</td><td>-0.019389</td><td>0.399752</td></tr>
+<tr><td>5</td><td>昆仑万维</td><td>154</td><td><code>39e1dbdae64a1501dc78</code></td><td>57.104858</td><td>0.104806</td><td>0.450732</td></tr>
+<tr><td>6</td><td>昆仑万维</td><td>210</td><td><code>79444a7cc2af705b2d34</code></td><td>56.873989</td><td>0.058637</td><td>0.424665</td></tr>
+<tr><td>7</td><td>昆仑万维</td><td>155</td><td><code>8f8499325aea7c8bde0b</code></td><td>56.866364</td><td>0.032220</td><td>0.410612</td></tr>
+<tr><td>8</td><td>昆仑万维</td><td>179</td><td><code>bed22cdd09a913fbdc24</code></td><td>56.695916</td><td>0.064841</td><td>0.426721</td></tr>
+<tr><td>9</td><td>科大讯飞</td><td>6</td><td><code>62240b7838ec8f10dc31</code></td><td>55.982985</td><td>0.033733</td><td>0.405300</td></tr>
+<tr><td>10</td><td>昆仑万维</td><td>14</td><td><code>a31f151d58730fc9cffe</code></td><td>55.838382</td><td>-0.054445</td><td>0.386421</td></tr>
+<tr><td>11</td><td>昆仑万维</td><td>200</td><td><code>6b2bbc3101fd988d1e73</code></td><td>53.800398</td><td>0.078441</td><td>0.413891</td></tr>
+<tr><td>12</td><td>昆仑万维</td><td>210</td><td><code>0aa6ca00793678540ecb</code></td><td>53.568567</td><td>0.087382</td><td>0.417025</td></tr>
+</table></div>
+<h3>vector · Top12</h3><div class="scroll"><table><tr><th>排名</th><th>公司</th><th>页码</th><th>切块ID</th><th>BM25</th><th>向量相似度</th><th>融合分数</th></tr>
+<tr><td>1</td><td>三六零</td><td>11</td><td><code>5c6bbacdf19e64dd5daf</code></td><td>5.865676</td><td>0.205939</td><td>0.149740</td></tr>
+<tr><td>2</td><td>三六零</td><td>10</td><td><code>832c7cbf98cce2c2ba17</code></td><td>3.135629</td><td>0.202936</td><td>0.129256</td></tr>
+<tr><td>3</td><td>润泽科技</td><td>12</td><td><code>ebb37f9c0afce33ed56f</code></td><td>39.316419</td><td>0.199985</td><td>0.378075</td></tr>
+<tr><td>4</td><td>润泽科技</td><td>24</td><td><code>16d1d0df9af84df9f50b</code></td><td>0.000000</td><td>0.192126</td><td>0.101827</td></tr>
+<tr><td>5</td><td>科大讯飞</td><td>57</td><td><code>eccedb45c7a690069002</code></td><td>3.619987</td><td>0.184460</td><td>0.122815</td></tr>
+<tr><td>6</td><td>三六零</td><td>140</td><td><code>f51b8350a731bbaf2367</code></td><td>2.467373</td><td>0.183300</td><td>0.114224</td></tr>
+<tr><td>7</td><td>中际旭创</td><td>94</td><td><code>4879ba608c8f61919395</code></td><td>1.091131</td><td>0.183175</td><td>0.104634</td></tr>
+<tr><td>8</td><td>中科曙光</td><td>68</td><td><code>49353319e17b3fa46a00</code></td><td>0.000000</td><td>0.183141</td><td>0.097065</td></tr>
+<tr><td>9</td><td>寒武纪</td><td>25</td><td><code>2d102c062c0492e2f9a9</code></td><td>0.000000</td><td>0.179786</td><td>0.095287</td></tr>
+<tr><td>10</td><td>三六零</td><td>21</td><td><code>03d33ecd2e2b24acd7f7</code></td><td>19.074016</td><td>0.178196</td><td>0.226443</td></tr>
+<tr><td>11</td><td>金山办公</td><td>90</td><td><code>0043ea0d6e65b07d7f08</code></td><td>0.000000</td><td>0.176915</td><td>0.093765</td></tr>
+<tr><td>12</td><td>中科曙光</td><td>14</td><td><code>301f6a6f91803e02bc64</code></td><td>18.643167</td><td>0.176593</td><td>0.222612</td></tr>
+</table></div>
+<h3>fusion · Top12</h3><div class="scroll"><table><tr><th>排名</th><th>公司</th><th>页码</th><th>切块ID</th><th>BM25</th><th>向量相似度</th><th>融合分数</th></tr>
+<tr><td>1</td><td>中科曙光</td><td>12</td><td><code>3b42fa4fc7fb07c7991a</code></td><td>67.915667</td><td>0.028391</td><td>0.485047</td></tr>
+<tr><td>2</td><td>昆仑万维</td><td>210</td><td><code>0e4ffd472ce6667a102b</code></td><td>59.390979</td><td>0.125645</td><td>0.477598</td></tr>
+<tr><td>3</td><td>昆仑万维</td><td>199</td><td><code>701d1fc3fa8ecf301330</code></td><td>59.772336</td><td>0.115899</td><td>0.475072</td></tr>
+<tr><td>4</td><td>昆仑万维</td><td>154</td><td><code>39e1dbdae64a1501dc78</code></td><td>57.104858</td><td>0.104806</td><td>0.450732</td></tr>
+<tr><td>5</td><td>昆仑万维</td><td>179</td><td><code>bed22cdd09a913fbdc24</code></td><td>56.695916</td><td>0.064841</td><td>0.426721</td></tr>
+<tr><td>6</td><td>昆仑万维</td><td>210</td><td><code>79444a7cc2af705b2d34</code></td><td>56.873989</td><td>0.058637</td><td>0.424665</td></tr>
+<tr><td>7</td><td>昆仑万维</td><td>210</td><td><code>0aa6ca00793678540ecb</code></td><td>53.568567</td><td>0.087382</td><td>0.417025</td></tr>
+<tr><td>8</td><td>昆仑万维</td><td>200</td><td><code>6b2bbc3101fd988d1e73</code></td><td>53.800398</td><td>0.078441</td><td>0.413891</td></tr>
+<tr><td>9</td><td>昆仑万维</td><td>155</td><td><code>8f8499325aea7c8bde0b</code></td><td>56.866364</td><td>0.032220</td><td>0.410612</td></tr>
+<tr><td>10</td><td>科大讯飞</td><td>6</td><td><code>62240b7838ec8f10dc31</code></td><td>55.982985</td><td>0.033733</td><td>0.405300</td></tr>
+<tr><td>11</td><td>昆仑万维</td><td>28</td><td><code>fa13c94b6f30584d4a3e</code></td><td>57.764704</td><td>-0.019389</td><td>0.399752</td></tr>
+<tr><td>12</td><td>昆仑万维</td><td>69</td><td><code>a69fa3b174952894111f</code></td><td>46.050108</td><td>0.147261</td><td>0.396731</td></tr>
+</table></div>
+</details>
+<details><summary>Q9 全景：12家公司上半年营业收入分别是多少，哪家最高？</summary><p>科大讯飞 营业收入：11622772994.87元 [PDF 7页/p0007_t0004/R2C2]；寒武纪 营业收入：5995573619.61元 [PDF 7页/p0007_t0009/R2C2]；海光信息 营业收入：9099020774.81元 [PDF 8页/p0008_t0009/R2C2]；浪潮信息 营业收入：84378727200.0元 [PDF 7页/p0007_t0004/R2C4]；中科曙光 营业收入：7465810151.43元 [PDF 5页/p0005_t0009/R2C2]；金山办公 营业收入：3313262599.2元 [PDF 6页/p0006_t0006/R2C2]；三六零 营业收入：4172122000.0元 [PDF 8页/p0008_t0010/R2C2]；昆仑万维 营业收入：5359200218.63元 [PDF 12页/p0012_t0004/R2C2]；拓尔思 营业收入：126374704.8元 [PDF 8页/p0008_t0005/R2C4]；云天励飞 营业收入：635662213.58元 [PDF 9页/p0009_t0011/R2C2]；中际旭创 营业收入：41777861795.03元 [PDF 8页/p0008_t0005/R2C4]；润泽科技 营业收入：3745694047.05元 [PDF 9页/p0009_t0006/R2C2]。营业收入最高：浪潮信息</p><p>评价：融合前12不足，需补取；融合公司覆盖：7/12。</p><p>证据Recall@12：bm25 0.0% / vector 0.0% / fusion 0.0%</p>
+<div class="scroll"><table><caption>逐项证据</caption><tr><th>公司／指标</th><th>原值／单位</th><th>PDF／表／行列</th><th>切块ID</th></tr>
+<tr><td>科大讯飞 / 营业收入</td><td>11,622,772,994.87 元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-21/1225485550.PDF#page=7'>第7页</a> / p0007_t0004 / R2C2</td><td><code>4a52775ab787b38a61c0</code></td></tr>
+<tr><td>寒武纪 / 营业收入</td><td>5,995,573,619.61 元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-08/1225464969.PDF#page=7'>第7页</a> / p0007_t0009 / R2C2</td><td><code>e0325397afa7da0a08a2</code></td></tr>
+<tr><td>海光信息 / 营业收入</td><td>9,099,020,774.81 元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-14/1225472510.PDF#page=8'>第8页</a> / p0008_t0009 / R2C2</td><td><code>9f3a03d7c87af044da5f</code></td></tr>
+<tr><td>浪潮信息 / 营业收入</td><td>8,437,872.72 万元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-29/1225530925.PDF#page=7'>第7页</a> / p0007_t0004 / R2C4</td><td><code>94fd8c3f16d770d4b096</code></td></tr>
+<tr><td>中科曙光 / 营业收入</td><td>7,465,810,151.43 元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-26/1225507613.PDF#page=5'>第5页</a> / p0005_t0009 / R2C2</td><td><code>eecc5f9546bb7ea5c32e</code></td></tr>
+<tr><td>金山办公 / 营业收入</td><td>3,313,262,599.20 元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-20/1225482678.PDF#page=6'>第6页</a> / p0006_t0006 / R2C2</td><td><code>6a75d44f9cebe0d54422</code></td></tr>
+<tr><td>三六零 / 营业收入</td><td>4,172,122 千元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-20/1225483359.PDF#page=8'>第8页</a> / p0008_t0010 / R2C2</td><td><code>f4a7606da1af0a655a85</code></td></tr>
+<tr><td>昆仑万维 / 营业收入</td><td>5,359,200,218.63 元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-20/1225483546.PDF#page=12'>第12页</a> / p0012_t0004 / R2C2</td><td><code>00bdac0a6f0388a7ef00</code></td></tr>
+<tr><td>拓尔思 / 营业收入</td><td>126,374,704.80 元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-29/1225523925.PDF#page=8'>第8页</a> / p0008_t0005 / R2C4</td><td><code>2fda1b5ecbdd4f4a964e</code></td></tr>
+<tr><td>云天励飞 / 营业收入</td><td>635,662,213.58 元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-27/1225515128.PDF#page=9'>第9页</a> / p0009_t0011 / R2C2</td><td><code>999de3355e39827835bc</code></td></tr>
+<tr><td>中际旭创 / 营业收入</td><td>41,777,861,795.03 元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-22/1225491753.PDF#page=8'>第8页</a> / p0008_t0005 / R2C4</td><td><code>42c5ef96eab836143003</code></td></tr>
+<tr><td>润泽科技 / 营业收入</td><td>3,745,694,047.05 元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-28/1225521959.PDF#page=9'>第9页</a> / p0009_t0006 / R2C2</td><td><code>44445ad14879eaa5f35b</code></td></tr>
+</table></div>
+<h3>bm25 · Top12</h3><div class="scroll"><table><tr><th>排名</th><th>公司</th><th>页码</th><th>切块ID</th><th>BM25</th><th>向量相似度</th><th>融合分数</th></tr>
+<tr><td>1</td><td>科大讯飞</td><td>36</td><td><code>66f45cf538f594e044bd</code></td><td>64.162530</td><td>-0.020045</td><td>0.470000</td></tr>
+<tr><td>2</td><td>中科曙光</td><td>12</td><td><code>3b42fa4fc7fb07c7991a</code></td><td>56.044794</td><td>0.093280</td><td>0.459975</td></tr>
+<tr><td>3</td><td>云天励飞</td><td>15</td><td><code>cbec1637a60126b78b3c</code></td><td>48.994037</td><td>-0.007276</td><td>0.358889</td></tr>
+<tr><td>4</td><td>科大讯飞</td><td>6</td><td><code>62240b7838ec8f10dc31</code></td><td>36.889079</td><td>-0.025953</td><td>0.270218</td></tr>
+<tr><td>5</td><td>润泽科技</td><td>14</td><td><code>3416b50b66bc55c6a7c7</code></td><td>33.931573</td><td>-0.020523</td><td>0.248554</td></tr>
+<tr><td>6</td><td>寒武纪</td><td>10</td><td><code>57514f47330925ac7bc8</code></td><td>33.824847</td><td>0.076790</td><td>0.288471</td></tr>
+<tr><td>7</td><td>浪潮信息</td><td>40</td><td><code>e03c15e7b4f7e72082c3</code></td><td>31.207543</td><td>0.074309</td><td>0.267984</td></tr>
+<tr><td>8</td><td>云天励飞</td><td>79</td><td><code>7f6837bd3e4194c52435</code></td><td>30.581335</td><td>0.046692</td><td>0.248760</td></tr>
+<tr><td>9</td><td>中科曙光</td><td>41</td><td><code>5b07d51163a6aa3ffe9e</code></td><td>30.171764</td><td>0.129714</td><td>0.289761</td></tr>
+<tr><td>10</td><td>润泽科技</td><td>11</td><td><code>d79b5c2f85bcf2c9cffc</code></td><td>30.164004</td><td>0.000184</td><td>0.221053</td></tr>
+<tr><td>11</td><td>中际旭创</td><td>139</td><td><code>c48099539d04a377ce30</code></td><td>29.469009</td><td>0.056709</td><td>0.245921</td></tr>
+<tr><td>12</td><td>中科曙光</td><td>39</td><td><code>b99be24f3d0d6b364157</code></td><td>28.759020</td><td>0.134580</td><td>0.281991</td></tr>
+</table></div>
+<h3>vector · Top12</h3><div class="scroll"><table><tr><th>排名</th><th>公司</th><th>页码</th><th>切块ID</th><th>BM25</th><th>向量相似度</th><th>融合分数</th></tr>
+<tr><td>1</td><td>海光信息</td><td>58</td><td><code>0d02319a4b830a9549f0</code></td><td>9.256090</td><td>0.265001</td><td>0.208253</td></tr>
+<tr><td>2</td><td>三六零</td><td>66</td><td><code>9ad2d1451f73cf0cd13c</code></td><td>9.154833</td><td>0.224324</td><td>0.185952</td></tr>
+<tr><td>3</td><td>中科曙光</td><td>109</td><td><code>fdbfdb86b6017258cd83</code></td><td>2.748562</td><td>0.196872</td><td>0.124476</td></tr>
+<tr><td>4</td><td>拓尔思</td><td>105</td><td><code>c8497cfb61e456f8969f</code></td><td>0.000000</td><td>0.192244</td><td>0.101889</td></tr>
+<tr><td>5</td><td>金山办公</td><td>28</td><td><code>09c05a198fbca1916b30</code></td><td>15.529231</td><td>0.189267</td><td>0.214065</td></tr>
+<tr><td>6</td><td>润泽科技</td><td>121</td><td><code>0e3b5b09a4d933d908e1</code></td><td>0.000000</td><td>0.187444</td><td>0.099345</td></tr>
+<tr><td>7</td><td>昆仑万维</td><td>93</td><td><code>363b68f494dff5dec14a</code></td><td>1.825081</td><td>0.186465</td><td>0.112195</td></tr>
+<tr><td>8</td><td>浪潮信息</td><td>108</td><td><code>5aa52f0171daaa2b4598</code></td><td>2.851623</td><td>0.184615</td><td>0.118735</td></tr>
+<tr><td>9</td><td>润泽科技</td><td>109</td><td><code>87b23cd081c7d9118b7d</code></td><td>0.000000</td><td>0.180353</td><td>0.095587</td></tr>
+<tr><td>10</td><td>浪潮信息</td><td>83</td><td><code>ba534959d9cfa3558839</code></td><td>0.000000</td><td>0.179959</td><td>0.095378</td></tr>
+<tr><td>11</td><td>云天励飞</td><td>109</td><td><code>e731a246d7af2ab8415a</code></td><td>0.000000</td><td>0.175311</td><td>0.092915</td></tr>
+<tr><td>12</td><td>云天励飞</td><td>69</td><td><code>4026582807a128792224</code></td><td>0.000000</td><td>0.172172</td><td>0.091251</td></tr>
+</table></div>
+<h3>fusion · Top12</h3><div class="scroll"><table><tr><th>排名</th><th>公司</th><th>页码</th><th>切块ID</th><th>BM25</th><th>向量相似度</th><th>融合分数</th></tr>
+<tr><td>1</td><td>科大讯飞</td><td>36</td><td><code>66f45cf538f594e044bd</code></td><td>64.162530</td><td>-0.020045</td><td>0.470000</td></tr>
+<tr><td>2</td><td>中科曙光</td><td>12</td><td><code>3b42fa4fc7fb07c7991a</code></td><td>56.044794</td><td>0.093280</td><td>0.459975</td></tr>
+<tr><td>3</td><td>云天励飞</td><td>15</td><td><code>cbec1637a60126b78b3c</code></td><td>48.994037</td><td>-0.007276</td><td>0.358889</td></tr>
+<tr><td>4</td><td>中科曙光</td><td>41</td><td><code>5b07d51163a6aa3ffe9e</code></td><td>30.171764</td><td>0.129714</td><td>0.289761</td></tr>
+<tr><td>5</td><td>寒武纪</td><td>10</td><td><code>57514f47330925ac7bc8</code></td><td>33.824847</td><td>0.076790</td><td>0.288471</td></tr>
+<tr><td>6</td><td>中科曙光</td><td>39</td><td><code>b99be24f3d0d6b364157</code></td><td>28.759020</td><td>0.134580</td><td>0.281991</td></tr>
+<tr><td>7</td><td>海光信息</td><td>56</td><td><code>6c502ad85c4d77eabeeb</code></td><td>27.700730</td><td>0.132259</td><td>0.273009</td></tr>
+<tr><td>8</td><td>润泽科技</td><td>134</td><td><code>02944e8e6e270f92c09d</code></td><td>25.178711</td><td>0.165177</td><td>0.271981</td></tr>
+<tr><td>9</td><td>润泽科技</td><td>123</td><td><code>2f21514d5d6d858d24ed</code></td><td>27.393148</td><td>0.131995</td><td>0.270616</td></tr>
+<tr><td>10</td><td>寒武纪</td><td>62</td><td><code>eaa1303b4cab3e63eb9c</code></td><td>25.921508</td><td>0.151744</td><td>0.270303</td></tr>
+<tr><td>11</td><td>科大讯飞</td><td>6</td><td><code>62240b7838ec8f10dc31</code></td><td>36.889079</td><td>-0.025953</td><td>0.270218</td></tr>
+<tr><td>12</td><td>浪潮信息</td><td>40</td><td><code>e03c15e7b4f7e72082c3</code></td><td>31.207543</td><td>0.074309</td><td>0.267984</td></tr>
+</table></div>
+</details>
+<details><summary>Q10 全景：12家公司归母净利润与经营现金流是否同向？哪些盈利但现金流为负？</summary><p>科大讯飞 归属于上市公司股东的净利润：-203840829.1元 [PDF 7页/p0007_t0004/R3C2]；科大讯飞 经营活动产生的现金流量净额：-945025869.53元 [PDF 7页/p0007_t0004/R5C2]；寒武纪 归属于上市公司股东的净利润：2310912080.33元 [PDF 7页/p0007_t0009/R4C2]；寒武纪 经营活动产生的现金流量净额：311314642.46元 [PDF 7页/p0007_t0009/R6C2]；海光信息 归属于上市公司股东的净利润：1798467918.03元 [PDF 8页/p0008_t0009/R4C2]；海光信息 经营活动产生的现金流量净额：-427541001.36元 [PDF 8页/p0008_t0009/R6C2]；浪潮信息 归属于上市公司股东的净利润：2951716900.0元 [PDF 7页/p0007_t0004/R3C4]；浪潮信息 经营活动产生的现金流量净额：-7492771200.0元 [PDF 7页/p0007_t0004/R7C4]；中科曙光 归属于上市公司股东的净利润：971389448.14元 [PDF 5页/p0005_t0009/R4C2]；中科曙光 经营活动产生的现金流量净额：-186509143.38元 [PDF 5页/p0005_t0009/R6C2]；金山办公 归属于上市公司股东的净利润：2517594330.93元 [PDF 6页/p0006_t0006/R4C2]；金山办公 经营活动产生的现金流量净额：642693273.51元 [PDF 6页/p0006_t0006/R6C2]；三六零 归属于上市公司股东的净利润：215688000.0元 [PDF 8页/p0008_t0010/R4C2]；三六零 经营活动产生的现金流量净额：153325000.0元 [PDF 8页/p0008_t0010/R5C2]；昆仑万维 归属于上市公司股东的净利润：1088006458.02元 [PDF 12页/p0012_t0004/R3C2]；昆仑万维 经营活动产生的现金流量净额：-467192371.76元 [PDF 12页/p0012_t0004/R5C2]；拓尔思 归属于上市公司股东的净利润：-168750458.11元 [PDF 8页/p0008_t0005/R3C4]；拓尔思 经营活动产生的现金流量净额：-86757001.1元 [PDF 8页/p0008_t0005/R6C4]；云天励飞 归属于上市公司股东的净利润：-252023802.03元 [PDF 9页/p0009_t0011/R4C2]；云天励飞 经营活动产生的现金流量净额：-112306486.67元 [PDF 9页/p0009_t0011/R6C2]；中际旭创 归属于上市公司股东的净利润：13651149693.27元 [PDF 8页/p0008_t0005/R3C4]；中际旭创 经营活动产生的现金流量净额：1799674832.02元 [PDF 26页/p0026_t0013/R7C4]；润泽科技 归属于上市公司股东的净利润：1203446677.8元 [PDF 9页/p0009_t0006/R3C2]；润泽科技 经营活动产生的现金流量净额：2958027620.47元 [PDF 9页/p0009_t0006/R5C2]。盈利但经营现金流为负：海光信息、浪潮信息、中科曙光、昆仑万维</p><p>评价：融合前12不足，需补取；融合公司覆盖：7/12。</p><p>证据Recall@12：bm25 0.0% / vector 0.0% / fusion 0.0%</p>
+<div class="scroll"><table><caption>逐项证据</caption><tr><th>公司／指标</th><th>原值／单位</th><th>PDF／表／行列</th><th>切块ID</th></tr>
+<tr><td>科大讯飞 / 归属于上市公司股东的净利润</td><td>-203,840,829.10 元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-21/1225485550.PDF#page=7'>第7页</a> / p0007_t0004 / R3C2</td><td><code>4a52775ab787b38a61c0</code></td></tr>
+<tr><td>科大讯飞 / 经营活动产生的现金流量净额</td><td>-945,025,869.53 元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-21/1225485550.PDF#page=7'>第7页</a> / p0007_t0004 / R5C2</td><td><code>4a52775ab787b38a61c0</code></td></tr>
+<tr><td>寒武纪 / 归属于上市公司股东的净利润</td><td>2,310,912,080.33 元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-08/1225464969.PDF#page=7'>第7页</a> / p0007_t0009 / R4C2</td><td><code>e0325397afa7da0a08a2</code></td></tr>
+<tr><td>寒武纪 / 经营活动产生的现金流量净额</td><td>311,314,642.46 元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-08/1225464969.PDF#page=7'>第7页</a> / p0007_t0009 / R6C2</td><td><code>e0325397afa7da0a08a2</code></td></tr>
+<tr><td>海光信息 / 归属于上市公司股东的净利润</td><td>1,798,467,918.03 元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-14/1225472510.PDF#page=8'>第8页</a> / p0008_t0009 / R4C2</td><td><code>9f3a03d7c87af044da5f</code></td></tr>
+<tr><td>海光信息 / 经营活动产生的现金流量净额</td><td>-427,541,001.36 元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-14/1225472510.PDF#page=8'>第8页</a> / p0008_t0009 / R6C2</td><td><code>9f3a03d7c87af044da5f</code></td></tr>
+<tr><td>浪潮信息 / 归属于上市公司股东的净利润</td><td>295,171.69 万元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-29/1225530925.PDF#page=7'>第7页</a> / p0007_t0004 / R3C4</td><td><code>94fd8c3f16d770d4b096</code></td></tr>
+<tr><td>浪潮信息 / 经营活动产生的现金流量净额</td><td>-749,277.12 万元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-29/1225530925.PDF#page=7'>第7页</a> / p0007_t0004 / R7C4</td><td><code>94fd8c3f16d770d4b096</code></td></tr>
+<tr><td>中科曙光 / 归属于上市公司股东的净利润</td><td>971,389,448.14 元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-26/1225507613.PDF#page=5'>第5页</a> / p0005_t0009 / R4C2</td><td><code>eecc5f9546bb7ea5c32e</code></td></tr>
+<tr><td>中科曙光 / 经营活动产生的现金流量净额</td><td>-186,509,143.38 元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-26/1225507613.PDF#page=5'>第5页</a> / p0005_t0009 / R6C2</td><td><code>eecc5f9546bb7ea5c32e</code></td></tr>
+<tr><td>金山办公 / 归属于上市公司股东的净利润</td><td>2,517,594,330.93 元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-20/1225482678.PDF#page=6'>第6页</a> / p0006_t0006 / R4C2</td><td><code>6a75d44f9cebe0d54422</code></td></tr>
+<tr><td>金山办公 / 经营活动产生的现金流量净额</td><td>642,693,273.51 元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-20/1225482678.PDF#page=6'>第6页</a> / p0006_t0006 / R6C2</td><td><code>6a75d44f9cebe0d54422</code></td></tr>
+<tr><td>三六零 / 归属于上市公司股东的净利润</td><td>215,688 千元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-20/1225483359.PDF#page=8'>第8页</a> / p0008_t0010 / R4C2</td><td><code>f4a7606da1af0a655a85</code></td></tr>
+<tr><td>三六零 / 经营活动产生的现金流量净额</td><td>153,325 千元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-20/1225483359.PDF#page=8'>第8页</a> / p0008_t0010 / R5C2</td><td><code>f4a7606da1af0a655a85</code></td></tr>
+<tr><td>昆仑万维 / 归属于上市公司股东的净利润</td><td>1,088,006,458.02 元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-20/1225483546.PDF#page=12'>第12页</a> / p0012_t0004 / R3C2</td><td><code>00bdac0a6f0388a7ef00</code></td></tr>
+<tr><td>昆仑万维 / 经营活动产生的现金流量净额</td><td>-467,192,371.76 元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-20/1225483546.PDF#page=12'>第12页</a> / p0012_t0004 / R5C2</td><td><code>00bdac0a6f0388a7ef00</code></td></tr>
+<tr><td>拓尔思 / 归属于上市公司股东的净利润</td><td>-168,750,458.11 元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-29/1225523925.PDF#page=8'>第8页</a> / p0008_t0005 / R3C4</td><td><code>2fda1b5ecbdd4f4a964e</code></td></tr>
+<tr><td>拓尔思 / 经营活动产生的现金流量净额</td><td>-86,757,001.10 元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-29/1225523925.PDF#page=8'>第8页</a> / p0008_t0005 / R6C4</td><td><code>2fda1b5ecbdd4f4a964e</code></td></tr>
+<tr><td>云天励飞 / 归属于上市公司股东的净利润</td><td>-252,023,802.03 元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-27/1225515128.PDF#page=9'>第9页</a> / p0009_t0011 / R4C2</td><td><code>999de3355e39827835bc</code></td></tr>
+<tr><td>云天励飞 / 经营活动产生的现金流量净额</td><td>-112,306,486.67 元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-27/1225515128.PDF#page=9'>第9页</a> / p0009_t0011 / R6C2</td><td><code>999de3355e39827835bc</code></td></tr>
+<tr><td>中际旭创 / 归属于上市公司股东的净利润</td><td>13,651,149,693.27 元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-22/1225491753.PDF#page=8'>第8页</a> / p0008_t0005 / R3C4</td><td><code>42c5ef96eab836143003</code></td></tr>
+<tr><td>中际旭创 / 经营活动产生的现金流量净额</td><td>1,799,674,832.02 元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-22/1225491753.PDF#page=26'>第26页</a> / p0026_t0013 / R7C4</td><td><code>843fe61e1a782f51207d</code></td></tr>
+<tr><td>润泽科技 / 归属于上市公司股东的净利润</td><td>1,203,446,677.80 元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-28/1225521959.PDF#page=9'>第9页</a> / p0009_t0006 / R3C2</td><td><code>44445ad14879eaa5f35b</code></td></tr>
+<tr><td>润泽科技 / 经营活动产生的现金流量净额</td><td>2,958,027,620.47 元</td><td><a href='https://static.cninfo.com.cn/finalpage/2026-08-28/1225521959.PDF#page=9'>第9页</a> / p0009_t0006 / R5C2</td><td><code>44445ad14879eaa5f35b</code></td></tr>
+</table></div>
+<h3>bm25 · Top12</h3><div class="scroll"><table><tr><th>排名</th><th>公司</th><th>页码</th><th>切块ID</th><th>BM25</th><th>向量相似度</th><th>融合分数</th></tr>
+<tr><td>1</td><td>昆仑万维</td><td>91</td><td><code>559594ef95602b79c591</code></td><td>65.915526</td><td>0.103628</td><td>0.524923</td></tr>
+<tr><td>2</td><td>科大讯飞</td><td>36</td><td><code>66f45cf538f594e044bd</code></td><td>65.069999</td><td>-0.011859</td><td>0.463971</td></tr>
+<tr><td>3</td><td>中科曙光</td><td>55</td><td><code>d0ff8a1590563dfa200a</code></td><td>62.990411</td><td>0.029097</td><td>0.464565</td></tr>
+<tr><td>4</td><td>科大讯飞</td><td>6</td><td><code>62240b7838ec8f10dc31</code></td><td>43.434832</td><td>0.037402</td><td>0.329528</td></tr>
+<tr><td>5</td><td>润泽科技</td><td>14</td><td><code>3416b50b66bc55c6a7c7</code></td><td>35.567351</td><td>-0.002785</td><td>0.253607</td></tr>
+<tr><td>6</td><td>昆仑万维</td><td>26</td><td><code>5e320d4442c071768c99</code></td><td>34.462798</td><td>0.096532</td><td>0.296894</td></tr>
+<tr><td>7</td><td>云天励飞</td><td>150</td><td><code>dd9d12257b51cdcc5a98</code></td><td>29.081902</td><td>-0.000804</td><td>0.207364</td></tr>
+<tr><td>8</td><td>金山办公</td><td>141</td><td><code>b9de68c550869bf3219e</code></td><td>28.478313</td><td>0.008436</td><td>0.207531</td></tr>
+<tr><td>9</td><td>润泽科技</td><td>57</td><td><code>1ba7910a42a781e03138</code></td><td>28.168903</td><td>0.072458</td><td>0.239256</td></tr>
+<tr><td>10</td><td>中科曙光</td><td>140</td><td><code>e853997b118d5e4d7e21</code></td><td>28.080654</td><td>0.019674</td><td>0.210652</td></tr>
+<tr><td>11</td><td>海光信息</td><td>128</td><td><code>b567e02a93273f49dc4c</code></td><td>27.910081</td><td>0.051926</td><td>0.226529</td></tr>
+<tr><td>12</td><td>中际旭创</td><td>137</td><td><code>affa77df2478407e6f98</code></td><td>27.776927</td><td>0.029525</td><td>0.213707</td></tr>
+</table></div>
+<h3>vector · Top12</h3><div class="scroll"><table><tr><th>排名</th><th>公司</th><th>页码</th><th>切块ID</th><th>BM25</th><th>向量相似度</th><th>融合分数</th></tr>
+<tr><td>1</td><td>浪潮信息</td><td>60</td><td><code>df7605ff5e25bda5d2b3</code></td><td>10.543206</td><td>0.218678</td><td>0.191076</td></tr>
+<tr><td>2</td><td>昆仑万维</td><td>210</td><td><code>79444a7cc2af705b2d34</code></td><td>5.970338</td><td>0.214184</td><td>0.156088</td></tr>
+<tr><td>3</td><td>润泽科技</td><td>5</td><td><code>18ec3e2cc7e138d0081d</code></td><td>0.000000</td><td>0.208107</td><td>0.110297</td></tr>
+<tr><td>4</td><td>金山办公</td><td>82</td><td><code>b806bbd1b012557c9662</code></td><td>10.269852</td><td>0.208095</td><td>0.183518</td></tr>
+<tr><td>5</td><td>云天励飞</td><td>65</td><td><code>565c51e6abf5b0906403</code></td><td>1.325718</td><td>0.190254</td><td>0.110288</td></tr>
+<tr><td>6</td><td>拓尔思</td><td>26</td><td><code>f7e15aff74859dc070d2</code></td><td>2.701666</td><td>0.190191</td><td>0.120065</td></tr>
+<tr><td>7</td><td>三六零</td><td>87</td><td><code>e982b019c56fc005da25</code></td><td>16.221745</td><td>0.188520</td><td>0.215582</td></tr>
+<tr><td>8</td><td>润泽科技</td><td>146</td><td><code>d941fa1d7412f4346134</code></td><td>3.192223</td><td>0.179977</td><td>0.118149</td></tr>
+<tr><td>9</td><td>海光信息</td><td>2</td><td><code>d78d9253e6a3f55f8a1a</code></td><td>0.000000</td><td>0.176279</td><td>0.093428</td></tr>
+<tr><td>10</td><td>科大讯飞</td><td>160</td><td><code>ee5babe73e038592c37f</code></td><td>0.000000</td><td>0.175932</td><td>0.093244</td></tr>
+<tr><td>11</td><td>海光信息</td><td>42</td><td><code>f0b661a4b81a9647f8ab</code></td><td>0.000000</td><td>0.174440</td><td>0.092453</td></tr>
+<tr><td>12</td><td>润泽科技</td><td>127</td><td><code>0f90cd5a4fc5af158b22</code></td><td>6.713154</td><td>0.174008</td><td>0.140091</td></tr>
+</table></div>
+<h3>fusion · Top12</h3><div class="scroll"><table><tr><th>排名</th><th>公司</th><th>页码</th><th>切块ID</th><th>BM25</th><th>向量相似度</th><th>融合分数</th></tr>
+<tr><td>1</td><td>昆仑万维</td><td>91</td><td><code>559594ef95602b79c591</code></td><td>65.915526</td><td>0.103628</td><td>0.524923</td></tr>
+<tr><td>2</td><td>中科曙光</td><td>55</td><td><code>d0ff8a1590563dfa200a</code></td><td>62.990411</td><td>0.029097</td><td>0.464565</td></tr>
+<tr><td>3</td><td>科大讯飞</td><td>36</td><td><code>66f45cf538f594e044bd</code></td><td>65.069999</td><td>-0.011859</td><td>0.463971</td></tr>
+<tr><td>4</td><td>科大讯飞</td><td>6</td><td><code>62240b7838ec8f10dc31</code></td><td>43.434832</td><td>0.037402</td><td>0.329528</td></tr>
+<tr><td>5</td><td>昆仑万维</td><td>26</td><td><code>5e320d4442c071768c99</code></td><td>34.462798</td><td>0.096532</td><td>0.296894</td></tr>
+<tr><td>6</td><td>润泽科技</td><td>14</td><td><code>3416b50b66bc55c6a7c7</code></td><td>35.567351</td><td>-0.002785</td><td>0.253607</td></tr>
+<tr><td>7</td><td>云天励飞</td><td>28</td><td><code>49d4e1b4162d70743f4d</code></td><td>27.409857</td><td>0.094882</td><td>0.245729</td></tr>
+<tr><td>8</td><td>润泽科技</td><td>57</td><td><code>1ba7910a42a781e03138</code></td><td>28.168903</td><td>0.072458</td><td>0.239256</td></tr>
+<tr><td>9</td><td>拓尔思</td><td>60</td><td><code>3c7e554d1850fa3c4476</code></td><td>23.413578</td><td>0.125165</td><td>0.233284</td></tr>
+<tr><td>10</td><td>拓尔思</td><td>122</td><td><code>5cd491c19ea8dfffbbda</code></td><td>26.023958</td><td>0.088334</td><td>0.232377</td></tr>
+<tr><td>11</td><td>海光信息</td><td>128</td><td><code>b567e02a93273f49dc4c</code></td><td>27.910081</td><td>0.051926</td><td>0.226529</td></tr>
+<tr><td>12</td><td>科大讯飞</td><td>76</td><td><code>8de558fff8ec19ff6c6b</code></td><td>23.110623</td><td>0.113188</td><td>0.224776</td></tr>
+</table></div>
+</details>
+</main></html>
